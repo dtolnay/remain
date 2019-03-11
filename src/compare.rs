@@ -37,6 +37,9 @@ fn cmp(lhs: &str, rhs: &str) -> Ordering {
         (false, false) => {}
     }
 
+    let lhs = lhs.to_ascii_lowercase();
+    let rhs = rhs.to_ascii_lowercase();
+
     // For now: asciibetical ordering.
-    lhs.cmp(rhs)
+    lhs.cmp(&rhs)
 }
