@@ -11,7 +11,7 @@ order.
 
 ```toml
 [dependencies]
-remain = "0.0"
+remain = "0.1"
 ```
 
 ## Syntax
