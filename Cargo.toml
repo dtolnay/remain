@@ -3,6 +3,11 @@ name = "remain"
 version = "0.0.0"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 edition = "2018"
+license = "MIT OR Apache-2.0"
+description = "Compile-time checks that an enum or match is written in sorted order."
+repository = "https://github.com/dtolnay/remain"
+documentation = "https://docs.rs/remain"
+readme = "README.md"
 
 [lib]
 proc-macro = true
