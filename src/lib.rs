@@ -11,6 +11,10 @@
 //! attribute.
 //!
 //! ```rust
+//! # use std::error::Error as StdError;
+//! # use std::fmt::{self, Display};
+//! # use std::io;
+//! #
 //! #[remain::sorted]
 //! #[derive(Debug)]
 //! pub enum Error {
@@ -26,6 +30,7 @@
 //! }
 //!
 //! impl Display for Error {
+//!     # #[remain::check]
 //!     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 //!         use self::Error::*;
 //!
@@ -43,6 +48,32 @@
 //!         }
 //!     }
 //! }
+//! #
+//! # mod signal {
+//! #     pub use std::io::Error;
+//! # }
+//! #
+//! # mod libcras {
+//! #     pub use std::io::Error;
+//! # }
+//! #
+//! # mod sys_util {
+//! #     pub use std::io::{Error, Error as SignalFdError};
+//! # }
+//! #
+//! # mod qcow {
+//! #     pub use std::io::Error;
+//! # }
+//! #
+//! # mod io_jail {
+//! #     pub use std::io::Error;
+//! # }
+//! #
+//! # mod virtio {
+//! #     pub use std::io::Error as NetError;
+//! # }
+//! #
+//! # fn main() {}
 //! ```
 //!
 //! If an enum variant or match arm is inserted out of order,
@@ -73,7 +104,9 @@
 //! requires a nightly compiler and the following two features enabled:
 //!
 //! ```rust
+//! # const IGNORE: &str = stringify! {
 //! #![feature(proc_macro_hygiene, stmt_expr_attributes)]
+//! # };
 //! ```
 //!
 //! As a stable alternative, this crate provides a function-level attribute
@@ -82,6 +115,10 @@
 //! function containing `#[sorted]` to make them work on a stable compiler.
 //!
 //! ```rust
+//! # use std::fmt::{self, Display};
+//! #
+//! # enum Error {}
+//! #
 //! impl Display for Error {
 //!     #[remain::check]
 //!     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -90,9 +127,12 @@
 //!         #[sorted]
 //!         match self {
 //!             /* ... */
+//!             # _ => unimplemented!(),
 //!         }
 //!     }
 //! }
+//! #
+//! # fn main() {}
 //! ```
 
 extern crate proc_macro;
