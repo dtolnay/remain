@@ -1,0 +1,8 @@
+error: E::Bbb should sort before E::Ccc
+  --> $DIR/match-stable.rs:17:9
+   |
+17 |         E::Bbb(_, _) => {}
+   |         ^^^^^^
+
+error: aborting due to previous error
+

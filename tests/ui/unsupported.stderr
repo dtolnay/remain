@@ -1,0 +1,8 @@
+error: unsupported by #[remain::sorted]
+ --> $DIR/unsupported.rs:7:9
+  |
+7 |         0..=20 => {}
+  |         ^^^^^^
+
+error: aborting due to previous error
+
