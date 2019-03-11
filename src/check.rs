@@ -51,7 +51,9 @@ impl IntoPath for Arm {
 
         let segments = match pat {
             Pat::Wild(pat) => vec![Ident::from(pat.underscore_token)],
-            Pat::Path(pat) => pat.path.segments.into_iter().map(|seg| seg.ident).collect(),
+            Pat::Path(pat) => idents_of_path(pat.path),
+            Pat::Struct(pat) => idents_of_path(pat.path),
+            Pat::TupleStruct(pat) => idents_of_path(pat.path),
             Pat::Ident(ref pat) if is_just_ident(pat) => vec![pat.ident.clone()],
             other => {
                 let msg = "unsupported by #[remain::sorted]";
@@ -61,6 +63,10 @@ impl IntoPath for Arm {
 
         Ok(Path { segments })
     }
+}
+
+fn idents_of_path(path: syn::Path) -> Vec<Ident> {
+    path.segments.into_iter().map(|seg| seg.ident).collect()
 }
 
 fn is_just_ident(pat: &PatIdent) -> bool {
