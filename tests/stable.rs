@@ -3,6 +3,7 @@ pub enum TestEnum {
     A,
     B,
     C,
+    D,
 }
 
 #[test]
@@ -15,6 +16,7 @@ fn test_match() {
         TestEnum::A => {}
         TestEnum::B => {}
         TestEnum::C => {}
+        _ => {}
     };
 }
 
@@ -28,5 +30,6 @@ fn test_let() {
         TestEnum::A => {}
         TestEnum::B => {}
         TestEnum::C => {}
+        _ => {}
     }
 }
