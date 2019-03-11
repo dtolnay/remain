@@ -1,3 +1,100 @@
+//! This crate provides an attribute macro to check at compile time that the
+//! variants of an enum or the arms of a match expression are written in sorted
+//! order.
+//!
+//! # Syntax
+//!
+//! Place a `#[remain::sorted]` attribute on enums, on match-expressions, or on
+//! let-statements whose value is a match-expression.
+//!
+//! Alternatively, import as `use remain::sorted;` and use `#[sorted]` as the
+//! attribute.
+//!
+//! ```rust
+//! #[remain::sorted]
+//! #[derive(Debug)]
+//! pub enum Error {
+//!     BlockSignal(signal::Error),
+//!     CreateCrasClient(libcras::Error),
+//!     CreateEventFd(sys_util::Error),
+//!     CreateSignalFd(sys_util::SignalFdError),
+//!     CreateSocket(io::Error),
+//!     DetectImageType(qcow::Error),
+//!     DeviceJail(io_jail::Error),
+//!     NetDeviceNew(virtio::NetError),
+//!     SpawnVcpu(io::Error),
+//! }
+//!
+//! impl Display for Error {
+//!     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//!         use self::Error::*;
+//!
+//!         #[remain::sorted]
+//!         match self {
+//!             BlockSignal(e) => write!(f, "failed to block signal: {}", e),
+//!             CreateCrasClient(e) => write!(f, "failed to create cras client: {}", e),
+//!             CreateEventFd(e) => write!(f, "failed to create eventfd: {}", e),
+//!             CreateSignalFd(e) => write!(f, "failed to create signalfd: {}", e),
+//!             CreateSocket(e) => write!(f, "failed to create socket: {}", e),
+//!             DetectImageType(e) => write!(f, "failed to detect disk image type: {}", e),
+//!             DeviceJail(e) => write!(f, "failed to jail device: {}", e),
+//!             NetDeviceNew(e) => write!(f, "failed to set up virtio networking: {}", e),
+//!             SpawnVcpu(e) => write!(f, "failed to spawn VCPU thread: {}", e),
+//!         }
+//!     }
+//! }
+//! ```
+//!
+//! If an enum variant or match arm is inserted out of order,
+//!
+//! ```diff
+//!       NetDeviceNew(virtio::NetError),
+//!       SpawnVcpu(io::Error),
+//! +     AaaUhOh(Box<dyn StdError>),
+//!   }
+//! ```
+//!
+//! then the macro produces a compile error.
+//!
+//! ```console
+//! error: AaaUhOh should sort before BlockSignal
+//!   --> tests/stable.rs:49:5
+//!    |
+//! 49 |     AaaUhOh(Box<dyn StdError>),
+//!    |     ^^^^^^^
+//! ```
+//!
+//! # Compiler support
+//!
+//! The attribute on enums is supported on any rustc version 1.31+.
+//!
+//! Rust does not yet have stable support for user-defined attributes within a
+//! function body, so the attribute on match-expressions and let-statements
+//! requires a nightly compiler and the following two features enabled:
+//!
+//! ```rust
+//! #![feature(proc_macro_hygiene, stmt_expr_attributes)]
+//! ```
+//!
+//! As a stable alternative, this crate provides a function-level attribute
+//! called `#[remain::check]` which makes match-expression and let-statement
+//! attributes work on any rustc version 1.31+. Place this attribute on any
+//! function containing `#[sorted]` to make them work on a stable compiler.
+//!
+//! ```rust
+//! impl Display for Error {
+//!     #[remain::check]
+//!     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//!         use self::Error::*;
+//!
+//!         #[sorted]
+//!         match self {
+//!             /* ... */
+//!         }
+//!     }
+//! }
+//! ```
+
 extern crate proc_macro;
 
 mod check;
