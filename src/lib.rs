@@ -10,7 +10,7 @@
 //! Alternatively, import as `use remain::sorted;` and use `#[sorted]` as the
 //! attribute.
 //!
-//! ```rust
+//! ```
 //! # use std::error::Error as StdError;
 //! # use std::fmt::{self, Display};
 //! # use std::io;
@@ -103,7 +103,7 @@
 //! function body, so the attribute on match-expressions and let-statements
 //! requires a nightly compiler and the following two features enabled:
 //!
-//! ```rust
+//! ```
 //! # const IGNORE: &str = stringify! {
 //! #![feature(proc_macro_hygiene, stmt_expr_attributes)]
 //! # };
@@ -114,7 +114,7 @@
 //! attributes work on any rustc version 1.31+. Place this attribute on any
 //! function containing `#[sorted]` to make them work on a stable compiler.
 //!
-//! ```rust
+//! ```
 //! # use std::fmt::{self, Display};
 //! #
 //! # enum Error {}
