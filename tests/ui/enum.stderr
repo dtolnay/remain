@@ -3,6 +3,3 @@ error: Bbb should sort before Ccc
   |
 8 |     Bbb(u8, u8),
   |     ^^^
-
-error: aborting due to previous error
-
