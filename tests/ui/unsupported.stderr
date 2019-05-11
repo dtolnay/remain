@@ -4,13 +4,13 @@ error: unsupported by #[remain::sorted]
 7 |         0..=20 => {}
   |         ^^^^^^
 
-error: expected enum, named struct, or match expression
+error: expected enum, struct, or match expression
   --> $DIR/unsupported.rs:12:1
    |
 12 | #[remain::sorted]
    | ^^^^^^^^^^^^^^^^^
 
-error: expected enum, named struct, or match expression
+error: expected enum, struct, or match expression
   --> $DIR/unsupported.rs:15:1
    |
 15 | #[remain::sorted]

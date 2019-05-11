@@ -16,8 +16,8 @@ remain = "0.1"
 
 ## Syntax
 
-Place a `#[remain::sorted]` attribute on enums, on named structs, on
-match-expressions, or on let-statements whose value is a match-expression.
+Place a `#[remain::sorted]` attribute on enums, structs, match-expressions, or
+let-statements whose value is a match-expression.
 
 Alternatively, import as `use remain::sorted;` and use `#[sorted]` as the
 attribute.

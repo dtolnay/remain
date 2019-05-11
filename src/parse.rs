@@ -75,6 +75,6 @@ impl Parse for Input {
 
 fn unexpected() -> Error {
     let span = Span::call_site();
-    let msg = "expected enum, named struct, or match expression";
+    let msg = "expected enum, struct, or match expression";
     Error::new(span, msg)
 }
