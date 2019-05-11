@@ -62,13 +62,10 @@ impl Parse for Input {
         let _: Visibility = ahead.parse()?;
         if ahead.peek(Token![enum]) {
             return input.parse().map(Input::Enum);
-        }
-        if ahead.peek(Token![struct]) {
-            let input = input.parse().map(Input::Struct)?;
-            if let Input::Struct(ref item) = input {
-                if let Fields::Named(_) = item.fields {
-                    return Ok(input);
-                }
+        } else if ahead.peek(Token![struct]) {
+            let input: syn::ItemStruct = input.parse()?;
+            if let Fields::Named(_) = input.fields {
+                return Ok(Input::Struct(input));
             }
         }
 
