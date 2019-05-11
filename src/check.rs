@@ -1,5 +1,5 @@
 use syn::{Arm, Ident, Result, Variant};
-use syn::{Error, Field, Fields, Pat, PatIdent};
+use syn::{Error, Field, Pat, PatIdent};
 
 use crate::compare::Path;
 use crate::format;
@@ -8,13 +8,7 @@ use crate::parse::Input::{self, *};
 pub fn sorted(input: Input) -> Result<()> {
     let paths = match input {
         Enum(item) => collect_paths(item.variants)?,
-        Struct(item) => {
-            if let Fields::Named(fields) = item.fields {
-                collect_paths(fields.named)?
-            } else {
-                unreachable!("must be named field")
-            }
-        }
+        Struct(fields) => collect_paths(fields.named)?,
         Match(expr) | Let(expr) => collect_paths(expr.arms)?,
     };
 
