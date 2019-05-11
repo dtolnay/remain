@@ -16,8 +16,8 @@ remain = "0.1"
 
 ## Syntax
 
-Place a `#[remain::sorted]` attribute on enums, on match-expressions, or on
-let-statements whose value is a match-expression.
+Place a `#[remain::sorted]` attribute on enums, on named structs, on
+match-expressions, or on let-statements whose value is a match-expression.
 
 Alternatively, import as `use remain::sorted;` and use `#[sorted]` as the
 attribute.
@@ -35,6 +35,16 @@ pub enum Error {
     DeviceJail(io_jail::Error),
     NetDeviceNew(virtio::NetError),
     SpawnVcpu(io::Error),
+}
+
+#[remain::sorted]
+#[derive(Debug)]
+pub enum Registers {
+    ax: u16,
+    cx: u16,
+    di: u16,
+    si: u16,
+    sp: u16,
 }
 
 impl Display for Error {
@@ -57,7 +67,7 @@ impl Display for Error {
 }
 ```
 
-If an enum variant or match arm is inserted out of order,
+If an enum variant, struct field, or match arm is inserted out of order,
 
 ```diff
       NetDeviceNew(virtio::NetError),
@@ -78,7 +88,7 @@ error: AaaUhOh should sort before BlockSignal
 
 ## Compiler support
 
-The attribute on enums is supported on any rustc version 1.31+.
+The attribute on enums and structs is supported on any rustc version 1.31+.
 
 Rust does not yet have stable support for user-defined attributes within a
 function body, so the attribute on match-expressions and let-statements requires

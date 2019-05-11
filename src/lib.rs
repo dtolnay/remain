@@ -4,8 +4,8 @@
 //!
 //! # Syntax
 //!
-//! Place a `#[remain::sorted]` attribute on enums, on match-expressions, or on
-//! let-statements whose value is a match-expression.
+//! Place a `#[remain::sorted]` attribute on enums, on named structs, on
+//! match-expressions, or on let-statements whose value is a match-expression.
 //!
 //! Alternatively, import as `use remain::sorted;` and use `#[sorted]` as the
 //! attribute.
@@ -76,7 +76,7 @@
 //! # fn main() {}
 //! ```
 //!
-//! If an enum variant or match arm is inserted out of order,
+//! If an enum variant, struct field, or match arm is inserted out of order,\
 //!
 //! ```diff
 //!       NetDeviceNew(virtio::NetError),

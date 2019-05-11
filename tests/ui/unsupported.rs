@@ -8,3 +8,9 @@ fn main() {
         _ => {}
     }
 }
+
+#[remain::sorted]
+struct TestUnnamedStruct(usize, usize, usize, usize);
+
+#[remain::sorted]
+struct TestUnitStruct;
