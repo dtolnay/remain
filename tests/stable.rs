@@ -1,9 +1,19 @@
+#![allow(dead_code)]
+
 #[remain::sorted]
 pub enum TestEnum {
     A,
     B,
     C,
     D,
+}
+
+#[remain::sorted]
+pub struct TestStruct {
+    a: usize,
+    b: usize,
+    c: usize,
+    d: usize,
 }
 
 #[test]

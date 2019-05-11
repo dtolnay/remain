@@ -1,6 +1,6 @@
 use proc_macro2::Span;
 use syn::parse::{Parse, ParseStream};
-use syn::{Attribute, Error, Expr, Result, Stmt, Token, Visibility};
+use syn::{Attribute, Error, Expr, Fields, Result, Stmt, Token, Visibility};
 
 use crate::emit::Kind;
 
@@ -15,6 +15,7 @@ impl Parse for Nothing {
 pub enum Input {
     Enum(syn::ItemEnum),
     Match(syn::ExprMatch),
+    Struct(syn::ItemStruct),
     Let(syn::ExprMatch),
 }
 
@@ -23,6 +24,7 @@ impl Input {
         match self {
             Input::Enum(_) => Kind::Enum,
             Input::Match(_) => Kind::Match,
+            Input::Struct(_) => Kind::Struct,
             Input::Let(_) => Kind::Let,
         }
     }
@@ -61,6 +63,14 @@ impl Parse for Input {
         if ahead.peek(Token![enum]) {
             return input.parse().map(Input::Enum);
         }
+        if ahead.peek(Token![struct]) {
+            let input = input.parse().map(Input::Struct)?;
+            if let Input::Struct(ref item) = input {
+                if let Fields::Named(_) = item.fields {
+                    return Ok(input);
+                }
+            }
+        }
 
         Err(unexpected())
     }
@@ -68,6 +78,6 @@ impl Parse for Input {
 
 fn unexpected() -> Error {
     let span = Span::call_site();
-    let msg = "expected enum or match expression";
+    let msg = "expected enum, named struct, or match expression";
     Error::new(span, msg)
 }

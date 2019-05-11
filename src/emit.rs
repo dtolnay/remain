@@ -7,6 +7,7 @@ use syn::Error;
 pub enum Kind {
     Enum,
     Match,
+    Struct,
     Let,
 }
 
@@ -21,7 +22,7 @@ pub fn emit(err: Error, kind: Kind, original: TokenStream) -> TokenStream {
     let original = proc_macro2::TokenStream::from(original);
 
     let expanded = match kind {
-        Kind::Enum | Kind::Let => quote!(#err #original),
+        Kind::Enum | Kind::Let | Kind::Struct => quote!(#err #original),
         Kind::Match => quote!({ #err #original }),
     };
 
@@ -32,7 +33,7 @@ pub fn emit(err: Error, kind: Kind, original: TokenStream) -> TokenStream {
 // https://github.com/rust-lang/rust/issues/43081
 fn probably_has_spans(kind: Kind) -> bool {
     match kind {
-        Kind::Enum => true,
+        Kind::Enum | Kind::Struct => true,
         Kind::Match | Kind::Let => false,
     }
 }

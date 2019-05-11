@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 #![cfg(not(remain_stable_testing))]
 #![feature(proc_macro_hygiene, stmt_expr_attributes)]
 
@@ -7,6 +8,14 @@ pub enum TestEnum {
     B,
     C,
     D,
+}
+
+#[remain::sorted]
+pub struct TestStruct {
+    a: usize,
+    b: usize,
+    c: usize,
+    d: usize,
 }
 
 #[test]
