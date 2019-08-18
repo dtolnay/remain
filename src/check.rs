@@ -56,14 +56,17 @@ impl IntoPath for Field {
 impl IntoPath for Arm {
     fn into_path(self) -> Result<Path> {
         // Sort by just the first pat.
-        let pat = self.pats.into_iter().next().expect("at least one pat");
+        let pat = match self.pat {
+            Pat::Or(pat) => pat.cases.into_iter().next().expect("at least one pat"),
+            _ => self.pat,
+        };
 
         let segments = match pat {
-            Pat::Wild(pat) => vec![Ident::from(pat.underscore_token)],
+            Pat::Ident(ref pat) if is_just_ident(pat) => vec![pat.ident.clone()],
             Pat::Path(pat) => idents_of_path(pat.path),
             Pat::Struct(pat) => idents_of_path(pat.path),
             Pat::TupleStruct(pat) => idents_of_path(pat.path),
-            Pat::Ident(ref pat) if is_just_ident(pat) => vec![pat.ident.clone()],
+            Pat::Wild(pat) => vec![Ident::from(pat.underscore_token)],
             other => {
                 let msg = "unsupported by #[remain::sorted]";
                 return Err(Error::new_spanned(other, msg));
