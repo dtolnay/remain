@@ -4,7 +4,11 @@
 pub enum TestEnum {
     A,
     B,
+    #[remain::unsorted]
+    Ignored,
     C,
+    #[unsorted]
+    AlsoIgnored,
     D,
 }
 
@@ -12,7 +16,11 @@ pub enum TestEnum {
 pub struct TestStruct {
     a: usize,
     b: usize,
+    #[unsorted]
+    ignored: usize,
     c: usize,
+    #[remain::unsorted]
+    also_ignored: usize,
     d: usize,
 }
 
@@ -24,7 +32,11 @@ fn test_let() {
     #[sorted]
     let _ = match value {
         TestEnum::A => {}
+        #[remain::unsorted]
+        TestEnum::Ignored => {}
         TestEnum::B => {}
+        #[unsorted]
+        TestEnum::AlsoIgnored => {}
         TestEnum::C => {}
         _ => {}
     };
@@ -39,7 +51,11 @@ fn test_match() {
     match value {
         TestEnum::A => {}
         TestEnum::B => {}
+        #[unsorted]
+        TestEnum::Ignored => {}
         TestEnum::C => {}
+        #[remain::unsorted]
+        TestEnum::AlsoIgnored => {}
         _ => {}
     }
 }
