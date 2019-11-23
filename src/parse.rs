@@ -15,7 +15,7 @@ impl Parse for Nothing {
 pub enum Input {
     Enum(syn::ItemEnum),
     Match(syn::ExprMatch),
-    Struct(syn::FieldsNamed),
+    Struct(syn::ItemStruct),
     Let(syn::ExprMatch),
 }
 
@@ -64,8 +64,8 @@ impl Parse for Input {
             return input.parse().map(Input::Enum);
         } else if ahead.peek(Token![struct]) {
             let input: syn::ItemStruct = input.parse()?;
-            if let Fields::Named(fields) = input.fields {
-                return Ok(Input::Struct(fields));
+            if let Fields::Named(_) = &input.fields {
+                return Ok(Input::Struct(input));
             }
         }
 

@@ -1,15 +1,26 @@
-use syn::{Arm, Ident, Result, Variant};
+use quote::quote;
+use syn::{Arm, Attribute, Ident, Result, Variant};
 use syn::{Error, Field, Pat, PatIdent};
+use syn::{ExprMatch, ItemEnum, ItemStruct};
 
 use crate::compare::Path;
 use crate::format;
 use crate::parse::Input::{self, *};
 
-pub fn sorted(input: Input) -> Result<()> {
-    let paths = match input {
-        Enum(item) => collect_paths(item.variants)?,
-        Struct(fields) => collect_paths(fields.named)?,
-        Match(expr) | Let(expr) => collect_paths(expr.arms)?,
+pub fn sorted(input: Input) -> Result<proc_macro2::TokenStream> {
+    let (output, paths) = match input {
+        Enum(mut item) => {
+            let paths = filter_unsorted_enum(&mut item)?;
+            (quote!(#item), paths)
+        }
+        Struct(mut item) => {
+            let paths = filter_unsorted_struct(&mut item)?;
+            (quote!(#item), paths)
+        }
+        Match(mut expr) | Let(mut expr) => {
+            let paths = filter_unsorted_match(&mut expr)?;
+            (quote!(#expr), paths)
+        }
     };
 
     for i in 1..paths.len() {
@@ -22,50 +33,91 @@ pub fn sorted(input: Input) -> Result<()> {
         }
     }
 
-    Ok(())
+    Ok(output)
 }
 
-fn collect_paths<I>(iter: I) -> Result<Vec<Path>>
-where
-    I: IntoIterator,
-    I::Item: IntoPath,
-{
-    iter.into_iter().map(IntoPath::into_path).collect()
+fn take_unsorted_attr(attrs: &mut Vec<Attribute>) -> bool {
+    for i in 0..attrs.len() {
+        let path = &attrs[i].path;
+        let path = quote!(#path).to_string();
+        if path == "unsorted" || path == "remain :: unsorted" {
+            attrs.remove(i);
+            return true;
+        }
+    }
+
+    false
 }
 
-trait IntoPath {
-    fn into_path(self) -> Result<Path>;
+fn filter_unsorted_enum(item: &mut ItemEnum) -> Result<Vec<Path>> {
+    item.variants
+        .iter_mut()
+        .filter_map(|variant| {
+            if take_unsorted_attr(&mut variant.attrs) {
+                return None;
+            }
+            Some(variant.to_path())
+        })
+        .collect()
 }
 
-impl IntoPath for Variant {
-    fn into_path(self) -> Result<Path> {
+fn filter_unsorted_struct(item: &mut ItemStruct) -> Result<Vec<Path>> {
+    item.fields
+        .iter_mut()
+        .filter_map(|field| {
+            if take_unsorted_attr(&mut field.attrs) {
+                return None;
+            }
+            Some(field.to_path())
+        })
+        .collect()
+}
+
+fn filter_unsorted_match(expr: &mut ExprMatch) -> Result<Vec<Path>> {
+    expr.arms
+        .iter_mut()
+        .filter_map(|arm| {
+            if take_unsorted_attr(&mut arm.attrs) {
+                return None;
+            }
+            Some(arm.to_path())
+        })
+        .collect()
+}
+
+trait ToPath {
+    fn to_path(&self) -> Result<Path>;
+}
+
+impl ToPath for Variant {
+    fn to_path(&self) -> Result<Path> {
         Ok(Path {
-            segments: vec![self.ident],
+            segments: vec![self.ident.clone()],
         })
     }
 }
 
-impl IntoPath for Field {
-    fn into_path(self) -> Result<Path> {
+impl ToPath for Field {
+    fn to_path(&self) -> Result<Path> {
         Ok(Path {
-            segments: vec![self.ident.expect("must be named field")],
+            segments: vec![self.ident.clone().expect("must be named field")],
         })
     }
 }
 
-impl IntoPath for Arm {
-    fn into_path(self) -> Result<Path> {
+impl ToPath for Arm {
+    fn to_path(&self) -> Result<Path> {
         // Sort by just the first pat.
-        let pat = match self.pat {
-            Pat::Or(pat) => pat.cases.into_iter().next().expect("at least one pat"),
-            _ => self.pat,
+        let pat = match &self.pat {
+            Pat::Or(pat) => pat.cases.iter().next().expect("at least one pat"),
+            _ => &self.pat,
         };
 
         let segments = match pat {
-            Pat::Ident(ref pat) if is_just_ident(pat) => vec![pat.ident.clone()],
-            Pat::Path(pat) => idents_of_path(pat.path),
-            Pat::Struct(pat) => idents_of_path(pat.path),
-            Pat::TupleStruct(pat) => idents_of_path(pat.path),
+            Pat::Ident(pat) if is_just_ident(&pat) => vec![pat.ident.clone()],
+            Pat::Path(pat) => idents_of_path(&pat.path),
+            Pat::Struct(pat) => idents_of_path(&pat.path),
+            Pat::TupleStruct(pat) => idents_of_path(&pat.path),
             Pat::Wild(pat) => vec![Ident::from(pat.underscore_token)],
             other => {
                 let msg = "unsupported by #[remain::sorted]";
@@ -77,8 +129,12 @@ impl IntoPath for Arm {
     }
 }
 
-fn idents_of_path(path: syn::Path) -> Vec<Ident> {
-    path.segments.into_iter().map(|seg| seg.ident).collect()
+fn idents_of_path(path: &syn::Path) -> Vec<Ident> {
+    path.segments
+        .clone()
+        .into_iter()
+        .map(|seg| seg.ident)
+        .collect()
 }
 
 fn is_just_ident(pat: &PatIdent) -> bool {
