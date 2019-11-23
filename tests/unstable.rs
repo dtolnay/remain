@@ -19,7 +19,7 @@ pub struct TestStruct {
 }
 
 #[test]
-fn test_match() {
+fn test_let() {
     let value = TestEnum::A;
 
     #[remain::sorted]
@@ -32,7 +32,7 @@ fn test_match() {
 }
 
 #[test]
-fn test_let() {
+fn test_match() {
     let value = TestEnum::A;
 
     #[remain::sorted]

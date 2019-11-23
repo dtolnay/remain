@@ -18,7 +18,7 @@ pub struct TestStruct {
 
 #[test]
 #[remain::check]
-fn test_match() {
+fn test_let() {
     let value = TestEnum::A;
 
     #[sorted]
@@ -32,7 +32,7 @@ fn test_match() {
 
 #[test]
 #[remain::check]
-fn test_let() {
+fn test_match() {
     let value = TestEnum::A;
 
     #[sorted]
