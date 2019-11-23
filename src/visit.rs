@@ -67,11 +67,14 @@ fn check_and_insert_error(input: ExprMatch, out: &mut Expr) {
     let original = quote!(#input);
     let input = Input::Match(input);
 
-    if let Err(err) = crate::check::sorted(input) {
-        let err = err.to_compile_error();
-        *out = parse_quote!({
-            #err
-            #original
-        });
-    }
+    *out = match crate::check::sorted(input) {
+        Ok(output) => parse_quote!(#output),
+        Err(err) => {
+            let err = err.to_compile_error();
+            parse_quote!({
+                #err
+                #original
+            })
+        }
+    };
 }
