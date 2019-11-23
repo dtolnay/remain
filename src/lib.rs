@@ -183,7 +183,7 @@ pub fn unsorted(args: TokenStream, input: TokenStream) -> TokenStream {
     // This attribute will always give a compile error, since it should only be used inside of a
     // #[remain::sorted] check, where it will be removed.
 
-    let msg = "#[remain::unsorted] is only supported inside of a #[remain::sorted]";
+    let msg = "#[remain::unsorted] is unsupported outside of #[remain::sorted]";
     let err = Error::new_spanned(args, msg).to_compile_error();
     TokenStream::from(quote! {
         #err
