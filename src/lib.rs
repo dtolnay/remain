@@ -146,22 +146,23 @@ mod visit;
 
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, Error, ItemFn};
+use syn::{parse_macro_input, ItemFn};
 
 use crate::emit::emit;
 use crate::parse::{Input, Nothing};
 
 #[proc_macro_attribute]
 pub fn sorted(args: TokenStream, input: TokenStream) -> TokenStream {
-    let original = input.clone();
-
     let _ = parse_macro_input!(args as Nothing);
-    let input = parse_macro_input!(input as Input);
+    let mut input = parse_macro_input!(input as Input);
     let kind = input.kind();
 
-    match check::sorted(input) {
-        Ok(output) => TokenStream::from(output),
-        Err(err) => emit(err, kind, original),
+    let result = check::sorted(&mut input);
+    let output = TokenStream::from(quote!(#input));
+
+    match result {
+        Ok(_) => output,
+        Err(err) => emit(err, kind, output),
     }
 }
 
@@ -173,20 +174,4 @@ pub fn check(args: TokenStream, input: TokenStream) -> TokenStream {
     visit::check(&mut input);
 
     TokenStream::from(quote!(#input))
-}
-
-#[proc_macro_attribute]
-pub fn unsorted(args: TokenStream, input: TokenStream) -> TokenStream {
-    let args = proc_macro2::TokenStream::from(args);
-    let input = proc_macro2::TokenStream::from(input);
-
-    // This attribute will always give a compile error, since it should only be used inside of a
-    // #[remain::sorted] check, where it will be removed.
-
-    let msg = "#[remain::unsorted] is unsupported outside of #[remain::sorted]";
-    let err = Error::new_spanned(args, msg).to_compile_error();
-    TokenStream::from(quote! {
-        #err
-        #input
-    })
 }

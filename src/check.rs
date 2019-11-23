@@ -7,20 +7,11 @@ use crate::compare::Path;
 use crate::format;
 use crate::parse::Input::{self, *};
 
-pub fn sorted(input: Input) -> Result<proc_macro2::TokenStream> {
-    let (output, paths) = match input {
-        Enum(mut item) => {
-            let paths = filter_unsorted_enum(&mut item)?;
-            (quote!(#item), paths)
-        }
-        Struct(mut item) => {
-            let paths = filter_unsorted_struct(&mut item)?;
-            (quote!(#item), paths)
-        }
-        Match(mut expr) | Let(mut expr) => {
-            let paths = filter_unsorted_match(&mut expr)?;
-            (quote!(#expr), paths)
-        }
+pub fn sorted(input: &mut Input) -> Result<()> {
+    let paths = match input {
+        Enum(item) => filter_unsorted_enum(item)?,
+        Struct(item) => filter_unsorted_struct(item)?,
+        Match(expr) | Let(expr) => filter_unsorted_match(expr)?,
     };
 
     for i in 1..paths.len() {
@@ -33,7 +24,7 @@ pub fn sorted(input: Input) -> Result<proc_macro2::TokenStream> {
         }
     }
 
-    Ok(output)
+    Ok(())
 }
 
 fn take_unsorted_attr(attrs: &mut Vec<Attribute>) -> bool {

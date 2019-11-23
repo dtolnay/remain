@@ -1,4 +1,5 @@
-use proc_macro2::Span;
+use proc_macro2::{Span, TokenStream};
+use syn::export::ToTokens;
 use syn::parse::{Parse, ParseStream};
 use syn::{Attribute, Error, Expr, Fields, Result, Stmt, Token, Visibility};
 
@@ -70,6 +71,16 @@ impl Parse for Input {
         }
 
         Err(unexpected())
+    }
+}
+
+impl ToTokens for Input {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        match self {
+            Input::Enum(item) => item.to_tokens(tokens),
+            Input::Struct(item) => item.to_tokens(tokens),
+            Input::Match(expr) | Input::Let(expr) => expr.to_tokens(tokens),
+        }
     }
 }
 
