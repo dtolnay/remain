@@ -39,7 +39,7 @@ pub enum Error {
 
 #[remain::sorted]
 #[derive(Debug)]
-pub enum Registers {
+pub struct Registers {
     ax: u16,
     cx: u16,
     di: u16,
