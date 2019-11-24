@@ -3,6 +3,7 @@
 #![feature(proc_macro_hygiene, stmt_expr_attributes)]
 
 #[remain::sorted]
+#[derive(PartialEq)]
 pub enum TestEnum {
     A,
     #[remain::unsorted]
@@ -13,6 +14,7 @@ pub enum TestEnum {
 }
 
 #[remain::sorted]
+#[derive(PartialEq)]
 pub struct TestStruct {
     a: usize,
     b: usize,
@@ -20,6 +22,16 @@ pub struct TestStruct {
     #[unsorted]
     ignored: usize,
     d: usize,
+}
+
+#[test]
+fn test_attrs() {
+    fn is_partial_eq<T: PartialEq>() -> bool {
+        true
+    }
+
+    assert!(is_partial_eq::<TestEnum>());
+    assert!(is_partial_eq::<TestStruct>());
 }
 
 #[test]

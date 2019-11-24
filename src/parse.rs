@@ -33,9 +33,10 @@ impl Input {
 
 impl Parse for Input {
     fn parse(input: ParseStream) -> Result<Self> {
-        let _ = input.call(Attribute::parse_outer)?;
+        let ahead = input.fork();
+        let _ = ahead.call(Attribute::parse_outer)?;
 
-        if input.peek(Token![match]) {
+        if ahead.peek(Token![match]) {
             let expr = match input.parse()? {
                 Expr::Match(expr) => expr,
                 _ => unreachable!("expected match"),
@@ -43,7 +44,7 @@ impl Parse for Input {
             return Ok(Input::Match(expr));
         }
 
-        if input.peek(Token![let]) {
+        if ahead.peek(Token![let]) {
             let stmt = match input.parse()? {
                 Stmt::Local(stmt) => stmt,
                 _ => unreachable!("expected let"),
@@ -59,7 +60,6 @@ impl Parse for Input {
             return Ok(Input::Let(expr));
         }
 
-        let ahead = input.fork();
         let _: Visibility = ahead.parse()?;
         if ahead.peek(Token![enum]) {
             return input.parse().map(Input::Enum);

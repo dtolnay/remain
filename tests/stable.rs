@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 
 #[remain::sorted]
+#[derive(PartialEq)]
 pub enum TestEnum {
     A,
     B,
@@ -13,6 +14,7 @@ pub enum TestEnum {
 }
 
 #[remain::sorted]
+#[derive(PartialEq)]
 pub struct TestStruct {
     a: usize,
     b: usize,
@@ -22,6 +24,16 @@ pub struct TestStruct {
     #[remain::unsorted]
     also_ignored: usize,
     d: usize,
+}
+
+#[test]
+fn test_attrs() {
+    fn is_partial_eq<T: PartialEq>() -> bool {
+        true
+    }
+
+    assert!(is_partial_eq::<TestEnum>());
+    assert!(is_partial_eq::<TestStruct>());
 }
 
 #[test]
