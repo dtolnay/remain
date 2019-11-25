@@ -1,5 +1,5 @@
 use proc_macro2::{Span, TokenStream};
-use syn::export::ToTokens;
+use quote::ToTokens;
 use syn::parse::{Parse, ParseStream};
 use syn::{Attribute, Error, Expr, Fields, Result, Stmt, Token, Visibility};
 
