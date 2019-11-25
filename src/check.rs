@@ -1,8 +1,9 @@
 use quote::quote;
+use std::cmp::Ordering;
 use syn::{Arm, Attribute, Ident, Result, Variant};
 use syn::{Error, Field, Pat, PatIdent};
 
-use crate::compare::Path;
+use crate::compare::{cmp, Path};
 use crate::format;
 use crate::parse::Input::{self, *};
 
@@ -15,9 +16,11 @@ pub fn sorted(input: &mut Input) -> Result<()> {
 
     for i in 1..paths.len() {
         let cur = &paths[i];
-        if *cur < paths[i - 1] {
+        if cmp(cur, &paths[i - 1]) == Ordering::Less {
             let lesser = cur;
-            let correct_pos = paths[..i - 1].binary_search(cur).unwrap_err();
+            let correct_pos = paths[..i - 1]
+                .binary_search_by(|probe| cmp(probe, cur))
+                .unwrap_err();
             let greater = &paths[correct_pos];
             return Err(format::error(lesser, greater));
         }
