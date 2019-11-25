@@ -1,0 +1,5 @@
+error: a should sort before d
+ --> $DIR/unsorted-struct.rs:8:5
+  |
+8 |     a: usize,
+  |     ^

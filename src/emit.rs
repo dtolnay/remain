@@ -11,7 +11,7 @@ pub enum Kind {
     Let,
 }
 
-pub fn emit(err: Error, kind: Kind, original: TokenStream) -> TokenStream {
+pub fn emit(err: Error, kind: Kind, output: TokenStream) -> TokenStream {
     let mut err = err;
     if !probably_has_spans(kind) {
         // Otherwise the error is printed without any line number.
@@ -19,11 +19,11 @@ pub fn emit(err: Error, kind: Kind, original: TokenStream) -> TokenStream {
     }
 
     let err = err.to_compile_error();
-    let original = proc_macro2::TokenStream::from(original);
+    let output = proc_macro2::TokenStream::from(output);
 
     let expanded = match kind {
-        Kind::Enum | Kind::Let | Kind::Struct => quote!(#err #original),
-        Kind::Match => quote!({ #err #original }),
+        Kind::Enum | Kind::Let | Kind::Struct => quote!(#err #output),
+        Kind::Match => quote!({ #err #output }),
     };
 
     TokenStream::from(expanded)
