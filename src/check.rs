@@ -26,9 +26,10 @@ pub fn sorted(input: &mut Input) -> Result<()> {
     };
 
     let lesser = &paths[wrong];
-    let correct_pos = paths[..wrong - 1]
-        .binary_search_by(|probe| cmp(probe, lesser, mode))
-        .unwrap_err();
+    let correct_pos = match paths[..wrong - 1].binary_search_by(|probe| cmp(probe, lesser, mode)) {
+        Err(correct_pos) => correct_pos,
+        Ok(equal_to) => equal_to + 1,
+    };
     let greater = &paths[correct_pos];
     return Err(format::error(lesser, greater));
 }
