@@ -1,0 +1,5 @@
+error: E::Aaa should sort before E::Bbb
+  --> $DIR/repeat.rs:12:9
+   |
+12 |         E::Aaa(_) => {}
+   |         ^^^^^^
