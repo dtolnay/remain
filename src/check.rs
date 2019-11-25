@@ -9,9 +9,9 @@ use crate::parse::Input::{self, *};
 
 pub fn sorted(input: &mut Input) -> Result<()> {
     let paths = match input {
-        Enum(item) => filter_unsorted_enum(item)?,
-        Struct(item) => filter_unsorted_struct(item)?,
-        Match(expr) | Let(expr) => filter_unsorted_match(expr)?,
+        Enum(item) => collect_enum_paths(item)?,
+        Struct(item) => collect_struct_paths(item)?,
+        Match(expr) | Let(expr) => collect_match_paths(expr)?,
     };
 
     for i in 1..paths.len() {
@@ -40,7 +40,7 @@ fn take_unsorted_attr(attrs: &mut Vec<Attribute>) -> bool {
     false
 }
 
-fn filter_unsorted_enum(item: &mut ItemEnum) -> Result<Vec<Path>> {
+fn collect_enum_paths(item: &mut ItemEnum) -> Result<Vec<Path>> {
     item.variants
         .iter_mut()
         .filter_map(|variant| {
@@ -52,7 +52,7 @@ fn filter_unsorted_enum(item: &mut ItemEnum) -> Result<Vec<Path>> {
         .collect()
 }
 
-fn filter_unsorted_struct(item: &mut ItemStruct) -> Result<Vec<Path>> {
+fn collect_struct_paths(item: &mut ItemStruct) -> Result<Vec<Path>> {
     item.fields
         .iter_mut()
         .filter_map(|field| {
@@ -64,7 +64,7 @@ fn filter_unsorted_struct(item: &mut ItemStruct) -> Result<Vec<Path>> {
         .collect()
 }
 
-fn filter_unsorted_match(expr: &mut ExprMatch) -> Result<Vec<Path>> {
+fn collect_match_paths(expr: &mut ExprMatch) -> Result<Vec<Path>> {
     expr.arms
         .iter_mut()
         .filter_map(|arm| {
