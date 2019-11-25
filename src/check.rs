@@ -110,11 +110,7 @@ impl Sortable for Arm {
 }
 
 fn idents_of_path(path: &syn::Path) -> Vec<Ident> {
-    path.segments
-        .clone()
-        .into_iter()
-        .map(|seg| seg.ident)
-        .collect()
+    path.segments.iter().map(|seg| seg.ident.clone()).collect()
 }
 
 fn is_just_ident(pat: &PatIdent) -> bool {
