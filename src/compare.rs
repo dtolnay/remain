@@ -1,7 +1,7 @@
 use proc_macro2::Ident;
 use std::cmp::Ordering;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum UnderscoreOrder {
     First,
     Last,
@@ -34,13 +34,20 @@ fn cmp_segment(lhs: &str, rhs: &str, mode: UnderscoreOrder) -> Ordering {
         (false, false) => {}
     }
 
-    let case = match mode {
-        UnderscoreOrder::First => str::to_ascii_lowercase,
-        UnderscoreOrder::Last => str::to_ascii_uppercase,
-    };
-    let lhs = case(lhs);
-    let rhs = case(rhs);
+    if mode == UnderscoreOrder::Last {
+        match count_leading_underscores(lhs).cmp(&count_leading_underscores(rhs)) {
+            Ordering::Equal => {}
+            non_eq => return non_eq,
+        }
+    }
+
+    let lhs = lhs.to_ascii_lowercase();
+    let rhs = rhs.to_ascii_lowercase();
 
     // For now: asciibetical ordering.
     lhs.cmp(&rhs)
+}
+
+fn count_leading_underscores(segment: &str) -> usize {
+    segment.chars().take_while(|c| *c == '_').count()
 }
