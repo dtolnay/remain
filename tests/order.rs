@@ -19,3 +19,17 @@ enum SnakeCase {
     under_score,
     underscore,
 }
+
+#[remain::sorted]
+enum NumberingSimple {
+    E1,
+    E9,
+    E10,
+}
+
+#[remain::sorted]
+enum NumberingComplex {
+    E1_Aaa,
+    E9_Aaa,
+    E10_Aaa,
+}
