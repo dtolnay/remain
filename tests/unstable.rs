@@ -11,6 +11,7 @@ pub enum TestEnum {
     B,
     C,
     D,
+    __Nonexhaustive,
 }
 
 #[remain::sorted]
