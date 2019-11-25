@@ -1,6 +1,8 @@
 use proc_macro2::Ident;
 use std::cmp::Ordering;
 
+use crate::atom::{iter_atoms, Atom};
+
 #[derive(Copy, Clone, PartialEq)]
 pub enum UnderscoreOrder {
     First,
@@ -23,8 +25,6 @@ pub fn cmp(lhs: &Path, rhs: &Path, mode: UnderscoreOrder) -> Ordering {
     lhs.segments.len().cmp(&rhs.segments.len())
 }
 
-// TODO: more intelligent comparison
-// for example to handle numeric cases like E9 < E10.
 fn cmp_segment(lhs: &str, rhs: &str, mode: UnderscoreOrder) -> Ordering {
     // Sort `_` last.
     match (lhs == "_", rhs == "_") {
@@ -34,20 +34,34 @@ fn cmp_segment(lhs: &str, rhs: &str, mode: UnderscoreOrder) -> Ordering {
         (false, false) => {}
     }
 
-    if mode == UnderscoreOrder::Last {
-        match count_leading_underscores(lhs).cmp(&count_leading_underscores(rhs)) {
-            Ordering::Equal => {}
-            non_eq => return non_eq,
+    let mut lhs_atoms = iter_atoms(&lhs);
+    let mut rhs_atoms = iter_atoms(&rhs);
+
+    loop {
+        let left = lhs_atoms.next();
+        let right = rhs_atoms.next();
+
+        let (left, right) = match (left, right) {
+            (None, None) => return Ordering::Equal,
+            (None, Some(_)) => return Ordering::Greater,
+            (Some(_), None) => return Ordering::Less,
+            (Some(left), Some(right)) => (left, right),
+        };
+
+        // Compare underscores with respect to mode.
+        match (&left, &right) {
+            (Atom::Underscore(l), Atom::Underscore(r)) => match l.cmp(&r) {
+                Ordering::Equal => continue,
+                non_eq => return non_eq,
+            },
+            (Atom::Underscore(_), _) if mode == UnderscoreOrder::First => return Ordering::Greater,
+            (Atom::Underscore(_), _) => return Ordering::Less,
+            (_, Atom::Underscore(_)) if mode == UnderscoreOrder::First => return Ordering::Less,
+            (_, Atom::Underscore(_)) => return Ordering::Greater,
+            _ => match left.cmp(&right) {
+                Ordering::Equal => continue,
+                non_eq => return non_eq,
+            },
         }
     }
-
-    let lhs = lhs.to_ascii_lowercase();
-    let rhs = rhs.to_ascii_lowercase();
-
-    // For now: asciibetical ordering.
-    lhs.cmp(&rhs)
-}
-
-fn count_leading_underscores(segment: &str) -> usize {
-    segment.chars().take_while(|c| *c == '_').count()
 }
