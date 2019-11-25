@@ -1,7 +1,6 @@
 use quote::quote;
 use syn::{Arm, Attribute, Ident, Result, Variant};
 use syn::{Error, Field, Pat, PatIdent};
-use syn::{ExprMatch, ItemEnum, ItemStruct};
 
 use crate::compare::Path;
 use crate::format;
@@ -9,9 +8,9 @@ use crate::parse::Input::{self, *};
 
 pub fn sorted(input: &mut Input) -> Result<()> {
     let paths = match input {
-        Enum(item) => collect_enum_paths(item)?,
-        Struct(item) => collect_struct_paths(item)?,
-        Match(expr) | Let(expr) => collect_match_paths(expr)?,
+        Enum(item) => collect_paths(&mut item.variants)?,
+        Struct(item) => collect_paths(&mut item.fields)?,
+        Match(expr) | Let(expr) => collect_paths(&mut expr.arms)?,
     };
 
     for i in 1..paths.len() {
@@ -27,7 +26,23 @@ pub fn sorted(input: &mut Input) -> Result<()> {
     Ok(())
 }
 
-fn take_unsorted_attr(attrs: &mut Vec<Attribute>) -> bool {
+fn collect_paths<'a, I, P>(iter: I) -> Result<Vec<Path>>
+where
+    I: IntoIterator<Item = &'a mut P>,
+    P: Sortable + 'a,
+{
+    iter.into_iter()
+        .filter_map(|item| {
+            if remove_unsorted_attr(item.attrs()) {
+                None
+            } else {
+                Some(item.to_path())
+            }
+        })
+        .collect()
+}
+
+fn remove_unsorted_attr(attrs: &mut Vec<Attribute>) -> bool {
     for i in 0..attrs.len() {
         let path = &attrs[i].path;
         let path = quote!(#path).to_string();
@@ -40,63 +55,34 @@ fn take_unsorted_attr(attrs: &mut Vec<Attribute>) -> bool {
     false
 }
 
-fn collect_enum_paths(item: &mut ItemEnum) -> Result<Vec<Path>> {
-    item.variants
-        .iter_mut()
-        .filter_map(|variant| {
-            if take_unsorted_attr(&mut variant.attrs) {
-                return None;
-            }
-            Some(variant.to_path())
-        })
-        .collect()
-}
-
-fn collect_struct_paths(item: &mut ItemStruct) -> Result<Vec<Path>> {
-    item.fields
-        .iter_mut()
-        .filter_map(|field| {
-            if take_unsorted_attr(&mut field.attrs) {
-                return None;
-            }
-            Some(field.to_path())
-        })
-        .collect()
-}
-
-fn collect_match_paths(expr: &mut ExprMatch) -> Result<Vec<Path>> {
-    expr.arms
-        .iter_mut()
-        .filter_map(|arm| {
-            if take_unsorted_attr(&mut arm.attrs) {
-                return None;
-            }
-            Some(arm.to_path())
-        })
-        .collect()
-}
-
-trait ToPath {
+trait Sortable {
     fn to_path(&self) -> Result<Path>;
+    fn attrs(&mut self) -> &mut Vec<Attribute>;
 }
 
-impl ToPath for Variant {
+impl Sortable for Variant {
     fn to_path(&self) -> Result<Path> {
         Ok(Path {
             segments: vec![self.ident.clone()],
         })
     }
+    fn attrs(&mut self) -> &mut Vec<Attribute> {
+        &mut self.attrs
+    }
 }
 
-impl ToPath for Field {
+impl Sortable for Field {
     fn to_path(&self) -> Result<Path> {
         Ok(Path {
             segments: vec![self.ident.clone().expect("must be named field")],
         })
     }
+    fn attrs(&mut self) -> &mut Vec<Attribute> {
+        &mut self.attrs
+    }
 }
 
-impl ToPath for Arm {
+impl Sortable for Arm {
     fn to_path(&self) -> Result<Path> {
         // Sort by just the first pat.
         let pat = match &self.pat {
@@ -117,6 +103,9 @@ impl ToPath for Arm {
         };
 
         Ok(Path { segments })
+    }
+    fn attrs(&mut self) -> &mut Vec<Attribute> {
+        &mut self.attrs
     }
 }
 
