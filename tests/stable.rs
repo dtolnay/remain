@@ -11,6 +11,7 @@ pub enum TestEnum {
     #[unsorted]
     AlsoIgnored,
     D,
+    __Nonexhaustive,
 }
 
 #[remain::sorted]
