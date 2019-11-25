@@ -3,7 +3,7 @@ use std::cmp::Ordering;
 use syn::{Arm, Attribute, Ident, Result, Variant};
 use syn::{Error, Field, Pat, PatIdent};
 
-use crate::compare::{cmp, Path};
+use crate::compare::{cmp, Path, UnderscoreOrder};
 use crate::format;
 use crate::parse::Input::{self, *};
 
@@ -14,19 +14,33 @@ pub fn sorted(input: &mut Input) -> Result<()> {
         Match(expr) | Let(expr) => collect_paths(&mut expr.arms)?,
     };
 
+    let mode = UnderscoreOrder::First;
+    if find_misordered(&paths, mode).is_none() {
+        return Ok(());
+    }
+
+    let mode = UnderscoreOrder::Last;
+    let wrong = match find_misordered(&paths, mode) {
+        Some(wrong) => wrong,
+        None => return Ok(()),
+    };
+
+    let lesser = &paths[wrong];
+    let correct_pos = paths[..wrong - 1]
+        .binary_search_by(|probe| cmp(probe, lesser, mode))
+        .unwrap_err();
+    let greater = &paths[correct_pos];
+    return Err(format::error(lesser, greater));
+}
+
+fn find_misordered(paths: &[Path], mode: UnderscoreOrder) -> Option<usize> {
     for i in 1..paths.len() {
-        let cur = &paths[i];
-        if cmp(cur, &paths[i - 1]) == Ordering::Less {
-            let lesser = cur;
-            let correct_pos = paths[..i - 1]
-                .binary_search_by(|probe| cmp(probe, cur))
-                .unwrap_err();
-            let greater = &paths[correct_pos];
-            return Err(format::error(lesser, greater));
+        if cmp(&paths[i], &paths[i - 1], mode) == Ordering::Less {
+            return Some(i);
         }
     }
 
-    Ok(())
+    None
 }
 
 fn collect_paths<'a, I, P>(iter: I) -> Result<Vec<Path>>
