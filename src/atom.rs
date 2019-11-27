@@ -19,7 +19,7 @@ impl<'a> PartialOrd<Atom<'a>> for Atom<'a> {
 
 impl<'a> Ord for Atom<'a> {
     fn cmp(&self, other: &Self) -> Ordering {
-        use Atom::*;
+        use self::Atom::*;
 
         match (self, other) {
             (Chars(l), Chars(r)) => cmp_ignore_case(l, r),
