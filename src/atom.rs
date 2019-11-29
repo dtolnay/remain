@@ -83,16 +83,13 @@ impl<'a> Iterator for AtomIter<'a> {
     type Item = Atom<'a>;
 
     fn next(&mut self) -> Option<Atom<'a>> {
-        // No more characters.
         if self.offset >= self.bytes.len() {
             return None;
         }
 
         let x = self.bytes[self.offset];
 
-        // Underscore or Number.
         match x {
-            // Underscore.
             b'_' => {
                 self.offset += 1;
 
@@ -109,7 +106,6 @@ impl<'a> Iterator for AtomIter<'a> {
 
                 Some(Atom::Underscore(n))
             }
-            // Number.
             b'0'..=b'9' => {
                 let start = self.offset;
 
@@ -121,14 +117,10 @@ impl<'a> Iterator for AtomIter<'a> {
                     }
                 }
 
-                let s = &self.bytes[start..self.offset];
-
-                // For sanity use `str::from_utf8`.
-                let num = str::from_utf8(s).expect("valid utf8");
-
-                Some(Atom::Number(num))
+                let bytes = &self.bytes[start..self.offset];
+                let number = str::from_utf8(bytes).expect("valid utf8");
+                Some(Atom::Number(number))
             }
-            // Don't care.
             _ => {
                 let start = self.offset;
 
@@ -140,12 +132,9 @@ impl<'a> Iterator for AtomIter<'a> {
                     }
                 }
 
-                let s = &self.bytes[start..self.offset];
-
-                // For sanity use `str::from_utf8`.
-                let s = str::from_utf8(s).expect("valid utf8");
-
-                return Some(Atom::Chars(s));
+                let bytes = &self.bytes[start..self.offset];
+                let chars = str::from_utf8(bytes).expect("valid utf8");
+                Some(Atom::Chars(chars))
             }
         }
     }
