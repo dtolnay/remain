@@ -1,35 +1,55 @@
 use std::cmp::{Ord, Ordering, PartialOrd};
-use std::str::from_utf8_unchecked;
+use std::str;
 
-#[derive(Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq)]
 pub enum Atom<'a> {
-    /// A sequence of digits.
-    Number(u64),
-    /// A sequence of characters.
-    Chars(&'a str),
     /// A sequence of underscores.
     Underscore(usize),
+    /// A sequence of digits.
+    Number(&'a str),
+    /// A sequence of characters.
+    Chars(&'a str),
 }
 
-impl<'a> PartialOrd<Atom<'a>> for Atom<'a> {
-    fn partial_cmp(&self, other: &Atom<'a>) -> Option<Ordering> {
+impl Atom<'_> {
+    pub fn underscores(&self) -> usize {
+        match *self {
+            Atom::Underscore(n) => n,
+            _ => 0,
+        }
+    }
+}
+
+impl PartialOrd for Atom<'_> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl<'a> Ord for Atom<'a> {
+impl Ord for Atom<'_> {
     fn cmp(&self, other: &Self) -> Ordering {
         use self::Atom::*;
 
         match (self, other) {
+            (Underscore(l), Underscore(r)) => l.cmp(r),
+            (Underscore(_), _) => Ordering::Less,
+            (_, Underscore(_)) => Ordering::Greater,
             (Chars(l), Chars(r)) => cmp_ignore_case(l, r),
             (Chars(_), _) => Ordering::Less,
             (_, Chars(_)) => Ordering::Greater,
-            (Number(l), Number(r)) => l.cmp(r),
-            (Number(_), _) => Ordering::Less,
-            (_, Number(_)) => Ordering::Greater,
-            (Underscore(l), Underscore(r)) => l.cmp(r),
+            (Number(l), Number(r)) => cmp_numeric(l, r),
         }
+    }
+}
+
+fn cmp_numeric(l: &str, r: &str) -> Ordering {
+    // Trim leading zeros.
+    let l = l.trim_start_matches('0');
+    let r = r.trim_start_matches('0');
+
+    match l.len().cmp(&r.len()) {
+        Ordering::Equal => l.cmp(r),
+        non_eq => non_eq,
     }
 }
 
@@ -58,27 +78,6 @@ pub struct AtomIter<'a> {
     bytes: &'a [u8],
     offset: usize,
 }
-
-// https://tools.ietf.org/html/rfc3629
-#[cfg_attr(rustfmt, rustfmt_skip)]
-static UTF8_CHAR_WIDTH: [u8; 256] = [
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, // 0x1F
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, // 0x3F
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, // 0x5F
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, // 0x7F
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, // 0x9F
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, // 0xBF
-    0,0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
-    2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, // 0xDF
-    3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3, // 0xEF
-    4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0, // 0xFF
-];
 
 impl<'a> Iterator for AtomIter<'a> {
     type Item = Atom<'a>;
@@ -122,16 +121,12 @@ impl<'a> Iterator for AtomIter<'a> {
                     }
                 }
 
-                // This is safe since we've verified it's valid utf8.
                 let s = &self.bytes[start..self.offset];
-                let s = unsafe { from_utf8_unchecked(s) };
 
-                let int = match s.parse::<u64>() {
-                    Ok(n) => n,
-                    _ => unreachable!("expected integer"),
-                };
+                // For sanity use `str::from_utf8`.
+                let num = str::from_utf8(s).expect("valid utf8");
 
-                Some(Atom::Number(int))
+                Some(Atom::Number(num))
             }
             // Don't care.
             _ => {
@@ -141,23 +136,14 @@ impl<'a> Iterator for AtomIter<'a> {
                 while self.offset < self.bytes.len() {
                     match self.bytes[self.offset] {
                         b'_' | b'0'..=b'9' => break,
-                        b => {
-                            // Use a copy of the UTF8_CHAR_WIDTH array from core::str to avoid
-                            // relying on unstable internals.
-                            self.offset += match UTF8_CHAR_WIDTH[b as usize] {
-                                0 => unreachable!("expected valid utf8"),
-                                width => width as usize,
-                            };
-                        }
+                        _ => self.offset += 1,
                     }
                 }
 
-                let s = if self.offset <= self.bytes.len() {
-                    &self.bytes[start..self.offset]
-                } else {
-                    &self.bytes[start..self.bytes.len()]
-                };
-                let s = unsafe { from_utf8_unchecked(s) };
+                let s = &self.bytes[start..self.offset];
+
+                // For sanity use `str::from_utf8`.
+                let s = str::from_utf8(s).expect("valid utf8");
 
                 return Some(Atom::Chars(s));
             }
