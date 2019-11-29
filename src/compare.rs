@@ -72,9 +72,9 @@ fn next_or_ordering<'a>(
     rhs_atoms: &mut AtomIter<'a>,
 ) -> Result<(Atom<'a>, Atom<'a>), Ordering> {
     match (lhs_atoms.next(), rhs_atoms.next()) {
-        (None, None) => return Err(Ordering::Equal),
-        (None, Some(_)) => return Err(Ordering::Less),
-        (Some(_), None) => return Err(Ordering::Greater),
+        (None, None) => Err(Ordering::Equal),
+        (None, Some(_)) => Err(Ordering::Less),
+        (Some(_), None) => Err(Ordering::Greater),
         (Some(left), Some(right)) => Ok((left, right)),
     }
 }

@@ -31,7 +31,7 @@ pub fn sorted(input: &mut Input) -> Result<()> {
         Ok(equal_to) => equal_to + 1,
     };
     let greater = &paths[correct_pos];
-    return Err(format::error(lesser, greater));
+    Err(format::error(lesser, greater))
 }
 
 fn find_misordered(paths: &[Path], mode: UnderscoreOrder) -> Option<usize> {
