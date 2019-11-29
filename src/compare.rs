@@ -1,7 +1,7 @@
 use proc_macro2::Ident;
 use std::cmp::Ordering;
 
-use crate::atom::{iter_atoms, Atom};
+use crate::atom::{iter_atoms, Atom, AtomIter};
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum UnderscoreOrder {
@@ -37,31 +37,44 @@ fn cmp_segment(lhs: &str, rhs: &str, mode: UnderscoreOrder) -> Ordering {
     let mut lhs_atoms = iter_atoms(&lhs);
     let mut rhs_atoms = iter_atoms(&rhs);
 
-    loop {
-        let left = lhs_atoms.next();
-        let right = rhs_atoms.next();
+    let (mut left, mut right) = match next_or_ordering(&mut lhs_atoms, &mut rhs_atoms) {
+        Ok(next) => next,
+        Err(ord) => return ord,
+    };
 
-        let (left, right) = match (left, right) {
-            (None, None) => return Ordering::Equal,
-            (None, Some(_)) => return Ordering::Greater,
-            (Some(_), None) => return Ordering::Less,
-            (Some(left), Some(right)) => (left, right),
-        };
-
-        // Compare underscores with respect to mode.
-        match (&left, &right) {
-            (Atom::Underscore(l), Atom::Underscore(r)) => match l.cmp(&r) {
-                Ordering::Equal => continue,
-                non_eq => return non_eq,
-            },
-            (Atom::Underscore(_), _) if mode == UnderscoreOrder::First => return Ordering::Greater,
-            (Atom::Underscore(_), _) => return Ordering::Less,
-            (_, Atom::Underscore(_)) if mode == UnderscoreOrder::First => return Ordering::Less,
-            (_, Atom::Underscore(_)) => return Ordering::Greater,
-            _ => match left.cmp(&right) {
-                Ordering::Equal => continue,
-                non_eq => return non_eq,
-            },
+    // Leading underscores.
+    if mode == UnderscoreOrder::Last {
+        match left.underscores().cmp(&right.underscores()) {
+            Ordering::Equal => {}
+            non_eq => return non_eq,
         }
+    }
+
+    loop {
+        match left.cmp(&right) {
+            Ordering::Equal => {}
+            non_eq => return non_eq,
+        }
+
+        match next_or_ordering(&mut lhs_atoms, &mut rhs_atoms) {
+            Ok((l, r)) => {
+                left = l;
+                right = r;
+            }
+            Err(ord) => return ord,
+        };
+    }
+}
+
+#[inline]
+fn next_or_ordering<'a>(
+    lhs_atoms: &mut AtomIter<'a>,
+    rhs_atoms: &mut AtomIter<'a>,
+) -> Result<(Atom<'a>, Atom<'a>), Ordering> {
+    match (lhs_atoms.next(), rhs_atoms.next()) {
+        (None, None) => return Err(Ordering::Equal),
+        (None, Some(_)) => return Err(Ordering::Greater),
+        (Some(_), None) => return Err(Ordering::Less),
+        (Some(left), Some(right)) => Ok((left, right)),
     }
 }
