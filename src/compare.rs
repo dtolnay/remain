@@ -62,7 +62,7 @@ fn cmp_segment(lhs: &str, rhs: &str, mode: UnderscoreOrder) -> Ordering {
                 right = r;
             }
             Err(ord) => return ord,
-        };
+        }
     }
 }
 
