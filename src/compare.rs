@@ -27,11 +27,11 @@ pub fn cmp(lhs: &Path, rhs: &Path, mode: UnderscoreOrder) -> Ordering {
 
 fn cmp_segment(lhs: &str, rhs: &str, mode: UnderscoreOrder) -> Ordering {
     // Sort `_` last.
-    match (lhs == "_", rhs == "_") {
-        (true, true) => return Ordering::Equal,
-        (true, false) => return Ordering::Greater,
-        (false, true) => return Ordering::Less,
-        (false, false) => {}
+    match (lhs, rhs) {
+        ("_", "_") => return Ordering::Equal,
+        ("_", _) => return Ordering::Greater,
+        (_, "_") => return Ordering::Less,
+        (_, _) => {}
     }
 
     let mut lhs_atoms = iter_atoms(&lhs);
