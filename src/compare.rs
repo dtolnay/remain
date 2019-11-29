@@ -37,13 +37,12 @@ fn cmp_segment(lhs: &str, rhs: &str, mode: UnderscoreOrder) -> Ordering {
     let mut lhs_atoms = iter_atoms(lhs);
     let mut rhs_atoms = iter_atoms(rhs);
 
-    let (mut left, mut right) = match next_or_ordering(&mut lhs_atoms, &mut rhs_atoms) {
-        Ok(next) => next,
-        Err(ord) => return ord,
-    };
+    // Path segments can't be empty.
+    let mut left = lhs_atoms.next().unwrap();
+    let mut right = rhs_atoms.next().unwrap();
 
-    // Leading underscores.
     if mode == UnderscoreOrder::Last {
+        // Compare leading underscores.
         match left.underscores().cmp(&right.underscores()) {
             Ordering::Equal => {}
             non_eq => return non_eq,
