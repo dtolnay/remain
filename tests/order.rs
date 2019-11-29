@@ -33,3 +33,17 @@ enum NumberingComplex {
     E9_Aaa,
     E10_Aaa,
 }
+
+#[remain::sorted]
+enum AtomOrder {
+    A,
+    A_,
+    A0,
+    Aaa,
+}
+
+#[remain::sorted]
+enum LargeNumber {
+    E1,
+    E99999999999999999999999,
+}
