@@ -1,7 +1,7 @@
 use proc_macro2::Ident;
 use std::cmp::Ordering;
 
-use crate::atom::{iter_atoms, Atom, AtomIter};
+use crate::atom::iter_atoms;
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum UnderscoreOrder {
@@ -55,24 +55,14 @@ fn cmp_segment(lhs: &str, rhs: &str, mode: UnderscoreOrder) -> Ordering {
             non_eq => return non_eq,
         }
 
-        match next_or_ordering(&mut lhs_atoms, &mut rhs_atoms) {
-            Ok((l, r)) => {
-                left = l;
-                right = r;
+        match (lhs_atoms.next(), rhs_atoms.next()) {
+            (None, None) => return Ordering::Equal,
+            (None, Some(_)) => return Ordering::Less,
+            (Some(_), None) => return Ordering::Greater,
+            (Some(nextl), Some(nextr)) => {
+                left = nextl;
+                right = nextr;
             }
-            Err(ord) => return ord,
         }
-    }
-}
-
-fn next_or_ordering<'a>(
-    lhs_atoms: &mut AtomIter<'a>,
-    rhs_atoms: &mut AtomIter<'a>,
-) -> Result<(Atom<'a>, Atom<'a>), Ordering> {
-    match (lhs_atoms.next(), rhs_atoms.next()) {
-        (None, None) => Err(Ordering::Equal),
-        (None, Some(_)) => Err(Ordering::Less),
-        (Some(_), None) => Err(Ordering::Greater),
-        (Some(left), Some(right)) => Ok((left, right)),
     }
 }
