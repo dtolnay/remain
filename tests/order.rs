@@ -41,12 +41,12 @@ enum AtomOrder {
     A0,
     AA,
     Aa,
+    under_0core,
     under_Score,
     under_score,
-    under_0core,
+    under__0core,
     under__Score,
     under__score,
-    under__0core,
     underscore,
 }
 

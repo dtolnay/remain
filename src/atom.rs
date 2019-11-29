@@ -34,10 +34,10 @@ impl Ord for Atom<'_> {
             (Underscore(l), Underscore(r)) => l.cmp(r),
             (Underscore(_), _) => Ordering::Less,
             (_, Underscore(_)) => Ordering::Greater,
-            (Chars(l), Chars(r)) => cmp_ignore_case(l, r),
-            (Chars(_), _) => Ordering::Less,
-            (_, Chars(_)) => Ordering::Greater,
             (Number(l), Number(r)) => cmp_numeric(l, r),
+            (Number(_), Chars(_)) => Ordering::Less,
+            (Chars(_), Number(_)) => Ordering::Greater,
+            (Chars(l), Chars(r)) => cmp_ignore_case(l, r),
         }
     }
 }
