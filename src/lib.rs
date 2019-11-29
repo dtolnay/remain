@@ -135,6 +135,8 @@
 //! # fn main() {}
 //! ```
 
+#![allow(clippy::needless_doctest_main)]
+
 extern crate proc_macro;
 
 mod atom;
