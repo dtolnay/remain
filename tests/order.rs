@@ -39,7 +39,15 @@ enum AtomOrder {
     A,
     A_,
     A0,
-    Aaa,
+    AA,
+    Aa,
+    under_Score,
+    under_score,
+    under_0core,
+    under__Score,
+    under__score,
+    under__0core,
+    underscore,
 }
 
 #[remain::sorted]
