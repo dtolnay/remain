@@ -137,6 +137,7 @@
 
 extern crate proc_macro;
 
+mod atom;
 mod check;
 mod compare;
 mod emit;

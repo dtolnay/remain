@@ -1,6 +1,8 @@
 use proc_macro2::Ident;
 use std::cmp::Ordering;
 
+use crate::atom::{iter_atoms, Atom, AtomIter};
+
 #[derive(Copy, Clone, PartialEq)]
 pub enum UnderscoreOrder {
     First,
@@ -23,8 +25,6 @@ pub fn cmp(lhs: &Path, rhs: &Path, mode: UnderscoreOrder) -> Ordering {
     lhs.segments.len().cmp(&rhs.segments.len())
 }
 
-// TODO: more intelligent comparison
-// for example to handle numeric cases like E9 < E10.
 fn cmp_segment(lhs: &str, rhs: &str, mode: UnderscoreOrder) -> Ordering {
     // Sort `_` last.
     match (lhs == "_", rhs == "_") {
@@ -34,20 +34,47 @@ fn cmp_segment(lhs: &str, rhs: &str, mode: UnderscoreOrder) -> Ordering {
         (false, false) => {}
     }
 
+    let mut lhs_atoms = iter_atoms(&lhs);
+    let mut rhs_atoms = iter_atoms(&rhs);
+
+    let (mut left, mut right) = match next_or_ordering(&mut lhs_atoms, &mut rhs_atoms) {
+        Ok(next) => next,
+        Err(ord) => return ord,
+    };
+
+    // Leading underscores.
     if mode == UnderscoreOrder::Last {
-        match count_leading_underscores(lhs).cmp(&count_leading_underscores(rhs)) {
+        match left.underscores().cmp(&right.underscores()) {
             Ordering::Equal => {}
             non_eq => return non_eq,
         }
     }
 
-    let lhs = lhs.to_ascii_lowercase();
-    let rhs = rhs.to_ascii_lowercase();
+    loop {
+        match left.cmp(&right) {
+            Ordering::Equal => {}
+            non_eq => return non_eq,
+        }
 
-    // For now: asciibetical ordering.
-    lhs.cmp(&rhs)
+        match next_or_ordering(&mut lhs_atoms, &mut rhs_atoms) {
+            Ok((l, r)) => {
+                left = l;
+                right = r;
+            }
+            Err(ord) => return ord,
+        };
+    }
 }
 
-fn count_leading_underscores(segment: &str) -> usize {
-    segment.chars().take_while(|c| *c == '_').count()
+#[inline]
+fn next_or_ordering<'a>(
+    lhs_atoms: &mut AtomIter<'a>,
+    rhs_atoms: &mut AtomIter<'a>,
+) -> Result<(Atom<'a>, Atom<'a>), Ordering> {
+    match (lhs_atoms.next(), rhs_atoms.next()) {
+        (None, None) => return Err(Ordering::Equal),
+        (None, Some(_)) => return Err(Ordering::Less),
+        (Some(_), None) => return Err(Ordering::Greater),
+        (Some(left), Some(right)) => Ok((left, right)),
+    }
 }
