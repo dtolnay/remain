@@ -66,7 +66,6 @@ fn cmp_segment(lhs: &str, rhs: &str, mode: UnderscoreOrder) -> Ordering {
     }
 }
 
-#[inline]
 fn next_or_ordering<'a>(
     lhs_atoms: &mut AtomIter<'a>,
     rhs_atoms: &mut AtomIter<'a>,
