@@ -3,9 +3,13 @@ error: expected enum, struct, or match expression
   |
 1 | #[remain::sorted]
   | ^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in an attribute macro (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error: expected enum, struct, or match expression
  --> $DIR/unnamed-fields.rs:4:1
   |
 4 | #[remain::sorted]
   | ^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in an attribute macro (in Nightly builds, run with -Z macro-backtrace for more info)

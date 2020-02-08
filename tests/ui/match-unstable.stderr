@@ -3,3 +3,5 @@ error: E::Bbb should sort before E::Ccc
    |
 15 |     #[sorted]
    |     ^^^^^^^^^
+   |
+   = note: this error originates in an attribute macro (in Nightly builds, run with -Z macro-backtrace for more info)
