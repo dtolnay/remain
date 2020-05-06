@@ -1,7 +1,7 @@
 Remain sorted
 =============
 
-[![Build Status](https://api.travis-ci.com/dtolnay/remain.svg?branch=master)](https://travis-ci.com/dtolnay/remain)
+[![Build Status](https://img.shields.io/github/workflow/status/dtolnay/remain/CI/master)](https://github.com/dtolnay/remain/actions?query=branch%3Amaster)
 [![Latest Version](https://img.shields.io/crates/v/remain.svg)](https://crates.io/crates/remain)
 [![Rust Documentation](https://img.shields.io/badge/api-rustdoc-blue.svg)](https://docs.rs/remain)
 
