@@ -1,4 +1,5 @@
 #![allow(dead_code, non_camel_case_types)]
+#![allow(clippy::enum_variant_names)]
 
 #[remain::sorted]
 enum UnderscoresFirst {
