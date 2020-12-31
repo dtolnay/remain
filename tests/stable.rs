@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+#![allow(clippy::let_unit_value, clippy::match_same_arms)]
 
 #[remain::sorted]
 #[derive(PartialEq)]

@@ -143,7 +143,14 @@
 //! # fn main() {}
 //! ```
 
-#![allow(clippy::needless_doctest_main)]
+#![allow(
+    clippy::enum_glob_use,
+    clippy::let_underscore_drop,
+    clippy::match_same_arms,
+    clippy::module_name_repetitions,
+    clippy::needless_doctest_main,
+    clippy::similar_names
+)]
 
 extern crate proc_macro;
 

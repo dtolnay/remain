@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #![cfg(not(remain_stable_testing))]
 #![feature(proc_macro_hygiene, stmt_expr_attributes)]
+#![allow(clippy::match_same_arms)]
 
 #[remain::sorted]
 #[derive(PartialEq)]
