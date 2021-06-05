@@ -109,7 +109,7 @@ impl Sortable for Arm {
         };
 
         let segments = match pat {
-            Pat::Ident(pat) if is_just_ident(&pat) => vec![pat.ident.clone()],
+            Pat::Ident(pat) if is_just_ident(pat) => vec![pat.ident.clone()],
             Pat::Path(pat) => idents_of_path(&pat.path),
             Pat::Struct(pat) => idents_of_path(&pat.path),
             Pat::TupleStruct(pat) => idents_of_path(&pat.path),
