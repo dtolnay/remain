@@ -5,6 +5,7 @@ fn main() {
     #[sorted]
     match value {
         "cognitive_complexity" => {}
+        "hello world" => {}
         "implicit_hasher" => {}
         "inefficient_to_string" => {}
         "integer_division" => {}
