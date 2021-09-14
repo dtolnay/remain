@@ -1,0 +1,7 @@
+error: unnested_or_patterns should sort before useless_let_if_seq
+ --> $DIR/match-strings-unstable.rs:8:5
+  |
+8 |     #[sorted]
+  |     ^^^^^^^^^
+  |
+  = note: this error originates in the attribute macro `sorted` (in Nightly builds, run with -Z macro-backtrace for more info)

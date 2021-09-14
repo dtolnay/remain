@@ -1,0 +1,5 @@
+error: unnested_or_patterns should sort before useless_let_if_seq
+  --> $DIR/match-strings-stable.rs:25:9
+   |
+25 |         "unnested_or_patterns" => {}
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^

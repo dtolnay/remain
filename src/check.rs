@@ -1,5 +1,6 @@
 use quote::quote;
 use std::cmp::Ordering;
+use syn::spanned::Spanned;
 use syn::{Arm, Attribute, Ident, Result, Variant};
 use syn::{Error, Field, Pat, PatIdent};
 
@@ -109,18 +110,27 @@ impl Sortable for Arm {
         };
 
         let segments = match pat {
-            Pat::Ident(pat) if is_just_ident(pat) => vec![pat.ident.clone()],
-            Pat::Path(pat) => idents_of_path(&pat.path),
-            Pat::Struct(pat) => idents_of_path(&pat.path),
-            Pat::TupleStruct(pat) => idents_of_path(&pat.path),
-            Pat::Wild(pat) => vec![Ident::from(pat.underscore_token)],
-            other => {
-                let msg = "unsupported by #[remain::sorted]";
-                return Err(Error::new_spanned(other, msg));
-            }
+            Pat::Lit(pat_lit) => match pat_lit.expr.as_ref() {
+                syn::Expr::Lit(lit) => match &lit.lit {
+                    syn::Lit::Str(s) => Some(vec![Ident::new(&s.value(), self.span())]),
+                    _ => None,
+                },
+                _ => None,
+            },
+            Pat::Ident(pat) if is_just_ident(pat) => Some(vec![pat.ident.clone()]),
+            Pat::Path(pat) => Some(idents_of_path(&pat.path)),
+            Pat::Struct(pat) => Some(idents_of_path(&pat.path)),
+            Pat::TupleStruct(pat) => Some(idents_of_path(&pat.path)),
+            Pat::Wild(pat) => Some(vec![Ident::from(pat.underscore_token)]),
+            _ => None,
         };
 
-        Ok(Path { segments })
+        if let Some(segments) = segments {
+            Ok(Path { segments })
+        } else {
+            let msg = "unsupported by #[remain::sorted]";
+            Err(Error::new_spanned(pat, msg))
+        }
     }
     fn attrs(&mut self) -> &mut Vec<Attribute> {
         &mut self.attrs
