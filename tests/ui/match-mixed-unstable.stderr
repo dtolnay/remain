@@ -1,5 +1,5 @@
-error: unnested_or_patterns should sort before useless_let_if_seq
- --> $DIR/match-strings-unstable.rs:8:5
+error: trivially_copy_pass_by_ref should sort before useless_let_if_seq
+ --> $DIR/match-mixed-unstable.rs:8:5
   |
 8 |     #[sorted]
   |     ^^^^^^^^^

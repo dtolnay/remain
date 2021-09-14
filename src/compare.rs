@@ -1,5 +1,6 @@
 use proc_macro2::Ident;
 use std::cmp::Ordering;
+use syn::LitStr;
 
 use crate::atom::iter_atoms;
 
@@ -9,11 +10,42 @@ pub enum UnderscoreOrder {
     Last,
 }
 
-pub struct Path {
-    pub segments: Vec<Ident>,
+pub struct Comparable {
+    pub segments: Vec<Box<dyn Segment>>,
 }
 
-pub fn cmp(lhs: &Path, rhs: &Path, mode: UnderscoreOrder) -> Ordering {
+impl Comparable {
+    pub fn of(segment: impl Segment + 'static) -> Comparable {
+        Comparable {
+            segments: vec![Box::new(segment)],
+        }
+    }
+}
+
+pub trait Segment: quote::ToTokens {
+    /// The string representation of these tokens to be used for sorting.
+    fn to_string(&self) -> String;
+}
+
+impl Segment for Ident {
+    fn to_string(&self) -> String {
+        ToString::to_string(&self)
+    }
+}
+
+impl Segment for LitStr {
+    fn to_string(&self) -> String {
+        self.value().to_string()
+    }
+}
+
+impl Segment for syn::token::Underscore {
+    fn to_string(&self) -> String {
+        "_".to_string()
+    }
+}
+
+pub fn cmp(lhs: &Comparable, rhs: &Comparable, mode: UnderscoreOrder) -> Ordering {
     // Lexicographic ordering across path segments.
     for (lhs, rhs) in lhs.segments.iter().zip(&rhs.segments) {
         match cmp_segment(&lhs.to_string(), &rhs.to_string(), mode) {
@@ -37,7 +69,7 @@ fn cmp_segment(lhs: &str, rhs: &str, mode: UnderscoreOrder) -> Ordering {
     let mut lhs_atoms = iter_atoms(lhs);
     let mut rhs_atoms = iter_atoms(rhs);
 
-    // Path segments can't be empty.
+    // Comparable segments can't be empty.
     let mut left = lhs_atoms.next().unwrap();
     let mut right = rhs_atoms.next().unwrap();
 
