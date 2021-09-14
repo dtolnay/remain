@@ -35,7 +35,7 @@ impl Segment for Ident {
 
 impl Segment for LitStr {
     fn to_string(&self) -> String {
-        self.value().to_string()
+        self.value()
     }
 }
 
@@ -69,7 +69,7 @@ fn cmp_segment(lhs: &str, rhs: &str, mode: UnderscoreOrder) -> Ordering {
     let mut lhs_atoms = iter_atoms(lhs);
     let mut rhs_atoms = iter_atoms(rhs);
 
-    // Comparable segments can't be empty.
+    // Path segments can't be empty.
     let mut left = lhs_atoms.next().unwrap();
     let mut right = rhs_atoms.next().unwrap();
 

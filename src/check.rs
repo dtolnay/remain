@@ -80,9 +80,7 @@ trait Sortable {
 
 impl Sortable for Variant {
     fn to_path(&self) -> Result<Comparable> {
-        Ok(Comparable {
-            segments: vec![Box::new(self.ident.clone())],
-        })
+        Ok(Comparable::of(self.ident.clone()))
     }
     fn attrs(&mut self) -> &mut Vec<Attribute> {
         &mut self.attrs
@@ -91,11 +89,9 @@ impl Sortable for Variant {
 
 impl Sortable for Field {
     fn to_path(&self) -> Result<Comparable> {
-        Ok(Comparable {
-            segments: vec![Box::new(
-                self.ident.as_ref().expect("must be named field").clone(),
-            )],
-        })
+        Ok(Comparable::of(
+            self.ident.as_ref().expect("must be named field").clone(),
+        ))
     }
     fn attrs(&mut self) -> &mut Vec<Attribute> {
         &mut self.attrs
@@ -119,9 +115,9 @@ impl Sortable for Arm {
                 _ => None,
             },
             Pat::Ident(pat) if is_just_ident(pat) => Some(Comparable::of(pat.ident.clone())),
-            Pat::Path(pat) => Some(comprables_of_path(&pat.path)),
-            Pat::Struct(pat) => Some(comprables_of_path(&pat.path)),
-            Pat::TupleStruct(pat) => Some(comprables_of_path(&pat.path)),
+            Pat::Path(pat) => Some(comparables_of_path(&pat.path)),
+            Pat::Struct(pat) => Some(comparables_of_path(&pat.path)),
+            Pat::TupleStruct(pat) => Some(comparables_of_path(&pat.path)),
             Pat::Wild(pat) => Some(Comparable::of(pat.underscore_token)),
             _ => None,
         };
@@ -138,7 +134,7 @@ impl Sortable for Arm {
     }
 }
 
-fn comprables_of_path(path: &syn::Path) -> Comparable {
+fn comparables_of_path(path: &syn::Path) -> Comparable {
     let mut segments: Vec<Box<dyn Segment>> = vec![];
 
     for seg in path.segments.iter() {
