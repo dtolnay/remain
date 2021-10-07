@@ -1,5 +1,5 @@
 error: E::Bbb should sort before E::Ccc
-  --> $DIR/unsorted-match-stable.rs:18:9
+  --> $DIR/tests/ui/unsorted-match-stable.rs:18:9
    |
 18 |         E::Bbb(_, _) => {}
    |         ^^^^^^

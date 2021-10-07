@@ -1,5 +1,5 @@
 error: E::Bbb should sort before E::Ddd
-  --> $DIR/unsorted-match-unstable.rs:15:5
+  --> $DIR/tests/ui/unsorted-match-unstable.rs:15:5
    |
 15 |     #[sorted]
    |     ^^^^^^^^^
