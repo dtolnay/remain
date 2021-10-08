@@ -1,5 +1,5 @@
 error: E::Aaa should sort before E::Bbb
-  --> $DIR/tests/ui/repeat.rs:12:9
+  --> tests/ui/repeat.rs:12:9
    |
 12 |         E::Aaa(_) => {}
    |         ^^^^^^

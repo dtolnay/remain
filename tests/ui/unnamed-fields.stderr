@@ -1,5 +1,5 @@
 error: expected enum, struct, or match expression
- --> $DIR/tests/ui/unnamed-fields.rs:1:1
+ --> tests/ui/unnamed-fields.rs:1:1
   |
 1 | #[remain::sorted]
   | ^^^^^^^^^^^^^^^^^
@@ -7,7 +7,7 @@ error: expected enum, struct, or match expression
   = note: this error originates in the attribute macro `remain::sorted` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error: expected enum, struct, or match expression
- --> $DIR/tests/ui/unnamed-fields.rs:4:1
+ --> tests/ui/unnamed-fields.rs:4:1
   |
 4 | #[remain::sorted]
   | ^^^^^^^^^^^^^^^^^

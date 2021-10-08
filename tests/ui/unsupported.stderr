@@ -1,5 +1,5 @@
 error: unsupported by #[remain::sorted]
- --> $DIR/tests/ui/unsupported.rs:7:9
+ --> tests/ui/unsupported.rs:7:9
   |
 7 |         0..=20 => {}
   |         ^^^^^^

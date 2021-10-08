@@ -1,5 +1,5 @@
 error: E::Bbb should sort before E::Ccc
-  --> $DIR/tests/ui/let-unstable.rs:15:5
+  --> tests/ui/let-unstable.rs:15:5
    |
 15 |     #[sorted]
    |     ^^^^^^^^^

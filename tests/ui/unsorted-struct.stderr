@@ -1,5 +1,5 @@
 error: a should sort before d
- --> $DIR/tests/ui/unsorted-struct.rs:8:5
+ --> tests/ui/unsorted-struct.rs:8:5
   |
 8 |     a: usize,
   |     ^
