@@ -164,10 +164,11 @@ mod visit;
 
 use proc_macro::TokenStream;
 use quote::quote;
+use syn::parse::Nothing;
 use syn::{parse_macro_input, ItemFn};
 
 use crate::emit::emit;
-use crate::parse::{Input, Nothing};
+use crate::parse::Input;
 
 #[proc_macro_attribute]
 pub fn sorted(args: TokenStream, input: TokenStream) -> TokenStream {

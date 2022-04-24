@@ -5,14 +5,6 @@ use syn::{Attribute, Error, Expr, Fields, Result, Stmt, Token, Visibility};
 
 use crate::emit::Kind;
 
-pub struct Nothing;
-
-impl Parse for Nothing {
-    fn parse(_input: ParseStream) -> Result<Self> {
-        Ok(Nothing)
-    }
-}
-
 pub enum Input {
     Enum(syn::ItemEnum),
     Match(syn::ExprMatch),
