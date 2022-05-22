@@ -144,6 +144,7 @@
 //! ```
 
 #![allow(
+    clippy::derive_partial_eq_without_eq,
     clippy::enum_glob_use,
     clippy::let_underscore_drop,
     clippy::match_same_arms,
