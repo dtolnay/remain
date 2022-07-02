@@ -147,6 +147,7 @@
     clippy::derive_partial_eq_without_eq,
     clippy::enum_glob_use,
     clippy::let_underscore_drop,
+    clippy::manual_find,
     clippy::match_same_arms,
     clippy::module_name_repetitions,
     clippy::needless_doctest_main,
