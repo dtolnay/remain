@@ -10,6 +10,7 @@ pub enum Input {
     Match(syn::ExprMatch),
     Struct(syn::ItemStruct),
     Let(syn::ExprMatch),
+    Impl(syn::ItemImpl),
 }
 
 impl Input {
@@ -19,6 +20,7 @@ impl Input {
             Input::Match(_) => Kind::Match,
             Input::Struct(_) => Kind::Struct,
             Input::Let(_) => Kind::Let,
+            Input::Impl(_) => Kind::Impl,
         }
     }
 }
@@ -52,6 +54,10 @@ impl Parse for Input {
             return Ok(Input::Let(expr));
         }
 
+        if ahead.peek(Token![impl]) {
+            return input.parse().map(Input::Impl);
+        }
+
         let _: Visibility = ahead.parse()?;
         if ahead.peek(Token![enum]) {
             return input.parse().map(Input::Enum);
@@ -70,6 +76,7 @@ impl ToTokens for Input {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self {
             Input::Enum(item) => item.to_tokens(tokens),
+            Input::Impl(item) => item.to_tokens(tokens),
             Input::Struct(item) => item.to_tokens(tokens),
             Input::Match(expr) | Input::Let(expr) => expr.to_tokens(tokens),
         }
@@ -78,6 +85,6 @@ impl ToTokens for Input {
 
 fn unexpected() -> Error {
     let span = Span::call_site();
-    let msg = "expected enum, struct, or match expression";
+    let msg = "expected enum, impl, struct, or match expression";
     Error::new(span, msg)
 }
