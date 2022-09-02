@@ -9,6 +9,7 @@ pub enum Kind {
     Match,
     Struct,
     Let,
+    Impl,
 }
 
 pub fn emit(err: Error, kind: Kind, output: TokenStream) -> TokenStream {
@@ -22,7 +23,7 @@ pub fn emit(err: Error, kind: Kind, output: TokenStream) -> TokenStream {
     let output = proc_macro2::TokenStream::from(output);
 
     let expanded = match kind {
-        Kind::Enum | Kind::Let | Kind::Struct => quote!(#err #output),
+        Kind::Enum | Kind::Let | Kind::Struct | Kind::Impl => quote!(#err #output),
         Kind::Match => quote!({ #err #output }),
     };
 
@@ -33,7 +34,7 @@ pub fn emit(err: Error, kind: Kind, output: TokenStream) -> TokenStream {
 // https://github.com/rust-lang/rust/issues/43081
 fn probably_has_spans(kind: Kind) -> bool {
     match kind {
-        Kind::Enum | Kind::Struct => true,
+        Kind::Enum | Kind::Struct | Kind::Impl => true,
         Kind::Match | Kind::Let => false,
     }
 }
