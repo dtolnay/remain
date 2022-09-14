@@ -7,7 +7,6 @@ description = "Compile-time checks that an enum, struct, or match is written in 
 documentation = "https://docs.rs/remain"
 edition = "2018"
 license = "MIT OR Apache-2.0"
-readme = "README.md"
 repository = "https://github.com/dtolnay/remain"
 rust-version = "1.31"
 
