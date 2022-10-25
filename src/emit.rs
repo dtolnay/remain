@@ -15,7 +15,7 @@ pub fn emit(err: Error, kind: Kind, output: TokenStream) -> TokenStream {
     let mut err = err;
     if !probably_has_spans(kind) {
         // Otherwise the error is printed without any line number.
-        err = Error::new(Span::call_site(), &err.to_string());
+        err = Error::new(Span::call_site(), err.to_string());
     }
 
     let err = err.to_compile_error();
