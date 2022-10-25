@@ -183,7 +183,7 @@ pub fn sorted(args: TokenStream, input: TokenStream) -> TokenStream {
 
     match result {
         Ok(_) => output,
-        Err(err) => emit(err, kind, output),
+        Err(err) => emit(&err, kind, output),
     }
 }
 

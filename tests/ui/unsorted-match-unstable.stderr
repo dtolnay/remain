@@ -1,7 +1,5 @@
 error: E::Bbb should sort before E::Ddd
-  --> tests/ui/unsorted-match-unstable.rs:15:5
+  --> tests/ui/unsorted-match-unstable.rs:21:9
    |
-15 |     #[sorted]
-   |     ^^^^^^^^^
-   |
-   = note: this error originates in the attribute macro `sorted` (in Nightly builds, run with -Z macro-backtrace for more info)
+21 |         E::Bbb(_, _) => {}
+   |         ^^^^^^
