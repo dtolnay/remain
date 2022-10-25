@@ -10,7 +10,7 @@ pub enum Kind {
     Let,
 }
 
-pub fn emit(err: Error, kind: Kind, output: TokenStream) -> TokenStream {
+pub fn emit(err: &Error, kind: Kind, output: TokenStream) -> TokenStream {
     let err = err.to_compile_error();
     let output = proc_macro2::TokenStream::from(output);
 
