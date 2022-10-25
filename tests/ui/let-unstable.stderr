@@ -1,7 +1,5 @@
 error: E::Bbb should sort before E::Ccc
-  --> tests/ui/let-unstable.rs:15:5
+  --> tests/ui/let-unstable.rs:20:9
    |
-15 |     #[sorted]
-   |     ^^^^^^^^^
-   |
-   = note: this error originates in the attribute macro `sorted` (in Nightly builds, run with -Z macro-backtrace for more info)
+20 |         E::Bbb(_, _) => {}
+   |         ^^^^^^
