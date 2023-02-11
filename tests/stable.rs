@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #![allow(
     clippy::derive_partial_eq_without_eq,
+    clippy::extra_unused_type_parameters,
     clippy::let_unit_value,
     clippy::match_same_arms
 )]
