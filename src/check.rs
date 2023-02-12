@@ -62,7 +62,7 @@ where
 
 fn remove_unsorted_attr(attrs: &mut Vec<Attribute>) -> bool {
     for i in 0..attrs.len() {
-        let path = &attrs[i].path;
+        let path = &attrs[i].path();
         let path = quote!(#path).to_string();
         if path == "unsorted" || path == "remain :: unsorted" {
             attrs.remove(i);
