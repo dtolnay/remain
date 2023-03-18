@@ -31,11 +31,11 @@ impl VisitMut for Checker {
         visit_mut::visit_local_mut(self, local);
 
         let init = match &local.init {
-            Some((_, init)) => init,
+            Some(init) => init,
             None => return,
         };
 
-        let expr_match = match init.as_ref() {
+        let expr_match = match init.expr.as_ref() {
             Expr::Match(expr) => expr,
             _ => return,
         };
@@ -45,14 +45,14 @@ impl VisitMut for Checker {
         }
 
         let input = expr_match.clone();
-        let expr = local.init.as_mut().unwrap().1.as_mut();
+        let expr = local.init.as_mut().unwrap().expr.as_mut();
         check_and_insert_error(input, expr);
     }
 }
 
 fn take_sorted_attr(attrs: &mut Vec<Attribute>) -> bool {
     for i in 0..attrs.len() {
-        let path = &attrs[i].path;
+        let path = &attrs[i].path();
         let path = quote!(#path).to_string();
         if path == "sorted" || path == "remain :: sorted" {
             attrs.remove(i);

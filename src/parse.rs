@@ -42,10 +42,10 @@ impl Parse for Input {
                 _ => unreachable!("expected let"),
             };
             let init = match stmt.init {
-                Some((_, init)) => *init,
+                Some(init) => init,
                 None => return Err(unexpected()),
             };
-            let expr = match init {
+            let expr = match *init.expr {
                 Expr::Match(expr) => expr,
                 _ => return Err(unexpected()),
             };
