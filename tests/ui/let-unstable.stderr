@@ -1,5 +1,10 @@
 error: E::Bbb should sort before E::Ccc
   --> tests/ui/let-unstable.rs:20:9
    |
+15 |     #[sorted]
+   |     --------- in this procedural macro expansion
+...
 20 |         E::Bbb(_, _) => {}
    |         ^^^^^^
+   |
+   = note: this error originates in the attribute macro `sorted` (in Nightly builds, run with -Z macro-backtrace for more info)

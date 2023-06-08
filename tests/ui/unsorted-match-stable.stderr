@@ -1,5 +1,10 @@
 error: E::Bbb should sort before E::Ccc
   --> tests/ui/unsorted-match-stable.rs:18:9
    |
+8  | #[remain::check]
+   | ---------------- in this procedural macro expansion
+...
 18 |         E::Bbb(_, _) => {}
    |         ^^^^^^
+   |
+   = note: this error originates in the attribute macro `remain::check` (in Nightly builds, run with -Z macro-backtrace for more info)
