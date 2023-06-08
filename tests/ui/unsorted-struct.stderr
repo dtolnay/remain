@@ -1,10 +1,5 @@
 error: a should sort before d
  --> tests/ui/unsorted-struct.rs:8:5
   |
-3 | #[sorted]
-  | --------- in this procedural macro expansion
-...
 8 |     a: usize,
   |     ^
-  |
-  = note: this error originates in the attribute macro `sorted` (in Nightly builds, run with -Z macro-backtrace for more info)

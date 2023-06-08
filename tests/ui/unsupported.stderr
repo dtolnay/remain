@@ -1,10 +1,5 @@
 error: unsupported by #[remain::sorted]
  --> tests/ui/unsupported.rs:7:9
   |
-1 | #[remain::check]
-  | ---------------- in this procedural macro expansion
-...
 7 |         0..=20 => {}
   |         ^^^^^^
-  |
-  = note: this error originates in the attribute macro `remain::check` (in Nightly builds, run with -Z macro-backtrace for more info)
