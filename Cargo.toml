@@ -2,7 +2,7 @@
 name = "remain"
 version = "0.2.8"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
-categories = ["development-tools", "no-std"]
+categories = ["development-tools", "no-std", "no-std::no-alloc"]
 description = "Compile-time checks that an enum, struct, or match is written in sorted order."
 documentation = "https://docs.rs/remain"
 edition = "2018"
