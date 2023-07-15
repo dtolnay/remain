@@ -1,4 +1,4 @@
-#![feature(proc_macro_hygiene, stmt_expr_attributes)]
+#![feature(proc_macro_hygiene)]
 
 use remain::sorted;
 
