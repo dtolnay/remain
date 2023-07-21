@@ -143,7 +143,7 @@
 //! # fn main() {}
 //! ```
 
-#![doc(html_root_url = "https://docs.rs/remain/0.2.10")]
+#![doc(html_root_url = "https://docs.rs/remain/0.2.11")]
 #![allow(
     clippy::derive_partial_eq_without_eq,
     clippy::enum_glob_use,
