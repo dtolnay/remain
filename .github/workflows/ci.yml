@@ -27,7 +27,6 @@ jobs:
       - uses: dtolnay/rust-toolchain@nightly
       - name: Enable type layout randomization
         run: echo RUSTFLAGS=${RUSTFLAGS}\ -Zrandomize-layout >> $GITHUB_ENV
-        if: false # FIXME https://github.com/rust-lang/rust/issues/113941
       - run: cargo test
 
   test:
