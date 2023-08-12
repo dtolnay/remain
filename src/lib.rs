@@ -183,7 +183,7 @@ pub fn sorted(args: TokenStream, input: TokenStream) -> TokenStream {
     let output = TokenStream::from(quote!(#input));
 
     match result {
-        Ok(_) => output,
+        Ok(()) => output,
         Err(err) => emit(&err, kind, output),
     }
 }
