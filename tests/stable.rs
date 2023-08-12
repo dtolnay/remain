@@ -50,7 +50,7 @@ fn test_let() {
     let value = TestEnum::A;
 
     #[sorted]
-    let _ = match value {
+    let () = match value {
         TestEnum::A => {}
         #[remain::unsorted]
         TestEnum::Ignored => {}
