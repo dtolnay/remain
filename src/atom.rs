@@ -1,4 +1,4 @@
-use std::cmp::{Ord, Ordering, PartialOrd};
+use std::cmp::Ordering;
 use std::str;
 
 #[derive(Copy, Clone, Eq, PartialEq)]
