@@ -1,6 +1,6 @@
 [package]
 name = "remain"
-version = "0.2.12"
+version = "0.2.13"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["development-tools", "no-std", "no-std::no-alloc"]
 description = "Compile-time checks that an enum, struct, or match is written in sorted order."
