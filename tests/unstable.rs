@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #![cfg(not(remain_stable_testing))]
 #![feature(proc_macro_hygiene, stmt_expr_attributes)]
+#![cfg_attr(not(check_cfg), allow(unexpected_cfgs))]
 #![allow(
     clippy::derive_partial_eq_without_eq,
     clippy::extra_unused_type_parameters,
