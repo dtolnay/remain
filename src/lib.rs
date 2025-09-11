@@ -152,7 +152,8 @@
     clippy::match_same_arms,
     clippy::module_name_repetitions,
     clippy::needless_doctest_main,
-    clippy::similar_names
+    clippy::similar_names,
+    clippy::uninlined_format_args
 )]
 #![allow(unknown_lints, mismatched_lifetime_syntaxes)]
 

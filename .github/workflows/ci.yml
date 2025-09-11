@@ -43,7 +43,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [beta, stable, 1.70.0, 1.56.0]
+        rust: [beta, stable, 1.70.0, 1.61.0]
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v5
@@ -52,7 +52,7 @@ jobs:
           toolchain: ${{matrix.rust}}
       - run: cargo check
       - run: cargo test
-        if: matrix.rust != '1.56.0'
+        if: matrix.rust != '1.61.0'
         env:
           RUSTFLAGS: --cfg remain_stable_testing ${{env.RUSTFLAGS}}
 
