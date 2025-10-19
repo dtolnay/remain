@@ -20,9 +20,8 @@ pub fn sorted(input: &mut Input) -> Result<()> {
     }
 
     let mode = UnderscoreOrder::Last;
-    let wrong = match find_misordered(&paths, mode) {
-        Some(wrong) => wrong,
-        None => return Ok(()),
+    let Some(wrong) = find_misordered(&paths, mode) else {
+        return Ok(());
     };
 
     let lesser = &paths[wrong];

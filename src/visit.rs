@@ -14,9 +14,8 @@ impl VisitMut for Checker {
     fn visit_expr_mut(&mut self, expr: &mut Expr) {
         visit_mut::visit_expr_mut(self, expr);
 
-        let expr_match = match expr {
-            Expr::Match(expr) => expr,
-            _ => return,
+        let Expr::Match(expr_match) = expr else {
+            return;
         };
 
         if !take_sorted_attr(&mut expr_match.attrs) {
@@ -30,14 +29,12 @@ impl VisitMut for Checker {
     fn visit_local_mut(&mut self, local: &mut Local) {
         visit_mut::visit_local_mut(self, local);
 
-        let init = match &local.init {
-            Some(init) => init,
-            None => return,
+        let Some(init) = &local.init else {
+            return;
         };
 
-        let expr_match = match init.expr.as_ref() {
-            Expr::Match(expr) => expr,
-            _ => return,
+        let Expr::Match(expr_match) = init.expr.as_ref() else {
+            return;
         };
 
         if !take_sorted_attr(&mut local.attrs) {

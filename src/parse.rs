@@ -29,25 +29,21 @@ impl Parse for Input {
         let _ = ahead.call(Attribute::parse_outer)?;
 
         if ahead.peek(Token![match]) {
-            let expr = match input.parse()? {
-                Expr::Match(expr) => expr,
-                _ => unreachable!("expected match"),
+            let Expr::Match(expr) = input.parse()? else {
+                unreachable!("expected match");
             };
             return Ok(Input::Match(expr));
         }
 
         if ahead.peek(Token![let]) {
-            let stmt = match input.parse()? {
-                Stmt::Local(stmt) => stmt,
-                _ => unreachable!("expected let"),
+            let Stmt::Local(stmt) = input.parse()? else {
+                unreachable!("expected let");
             };
-            let init = match stmt.init {
-                Some(init) => init,
-                None => return Err(unexpected()),
+            let Some(init) = stmt.init else {
+                return Err(unexpected());
             };
-            let expr = match *init.expr {
-                Expr::Match(expr) => expr,
-                _ => return Err(unexpected()),
+            let Expr::Match(expr) = *init.expr else {
+                return Err(unexpected());
             };
             return Ok(Input::Let(expr));
         }
