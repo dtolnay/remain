@@ -1,0 +1,5 @@
+error: trivially_copy_pass_by_ref should sort before useless_let_if_seq
+  --> $DIR/match-mixed-stable.rs:27:9
+   |
+27 |         "trivially_copy_pass_by_ref" => {}
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
